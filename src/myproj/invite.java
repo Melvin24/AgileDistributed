@@ -66,7 +66,7 @@ public class invite  {
         
         ObservableList<String> observableListInvites = FXCollections.observableArrayList();
         ObservableList<String> observableListOwner = FXCollections.observableArrayList();
-        ObservableList<String> observableListDeadline = FXCollections.observableArrayList();
+        ObservableList<String> observableListSprint = FXCollections.observableArrayList();
         ObservableList<String> observableListYurRole = FXCollections.observableArrayList();
         ObservableList<String> observableListBrief = FXCollections.observableArrayList();
         ObservableList<String> observableListCreated = FXCollections.observableArrayList();
@@ -99,7 +99,7 @@ public class invite  {
                 {
                     observableListInvites.add(rs3.getString("Project_Name"));
                     observableListOwner.add(getName(rs3.getInt("PrjOwnrUser_ID")));
-                    observableListDeadline.add(rs3.getString("Project_Deadline"));
+                    observableListSprint.add(rs3.getString("Project_Num_Sprints"));
                     observableListBrief.add(rs3.getString("Project_Brief"));
                     observableListCreated.add(rs3.getString("Project_Created"));
                 }
@@ -136,11 +136,11 @@ public class invite  {
         grid.add(prjctCreatedTextField, 6, 6);
         
         
-        Label prjctDeadline = new Label("Project Deadline:");
-        grid.add(prjctDeadline, 5, 7);
-        TextField prjctDeadlineTextField = new TextField();
-        prjctDeadlineTextField.setEditable(false);
-        grid.add(prjctDeadlineTextField, 6, 7);
+        Label prjctSprint = new Label("Number Of Sprint:");
+        grid.add(prjctSprint, 5, 7);
+        TextField prjctSprintTextField = new TextField();
+        prjctSprintTextField.setEditable(false);
+        grid.add(prjctSprintTextField, 6, 7);
         
         Label yurRoleStatus = new Label("Your Role:");
         grid.add(yurRoleStatus, 5, 8);
@@ -191,7 +191,7 @@ public class invite  {
                     acceptBtn.setDisable(false);
                     declineBtn.setDisable(false);
                     prjctNameTextField.setText(new_val);
-                    prjctDeadlineTextField.setText(observableListDeadline.get(observableListInvites.indexOf(new_val)));
+                    prjctSprintTextField.setText(observableListSprint.get(observableListInvites.indexOf(new_val)));
                     yurRoleTextField.setText(observableListYurRole.get(observableListInvites.indexOf(new_val)));
                     briefTextArea.setText(observableListBrief.get(observableListInvites.indexOf(new_val)));
                     prjctOwnrTextField.setText(observableListOwner.get(observableListInvites.indexOf(new_val))); 

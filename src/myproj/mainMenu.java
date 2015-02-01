@@ -70,7 +70,7 @@ public class mainMenu  {
         //adding a listview
         ObservableList<String> observableList = FXCollections.observableArrayList();
         ObservableList<String> observableListOwner = FXCollections.observableArrayList();
-        ObservableList<String> observableListDeadline = FXCollections.observableArrayList();
+        ObservableList<String> observableListNumOfSprints = FXCollections.observableArrayList();
         ObservableList<String> observableListStatus = FXCollections.observableArrayList();
         ObservableList<String> observableListYurRole = FXCollections.observableArrayList();
         ObservableList<String> observableListBrief = FXCollections.observableArrayList();
@@ -86,8 +86,6 @@ public class mainMenu  {
             //sql to get user id from the user info table but only get the once that have confirmed to a project
             ResultSet rs2 = st.executeQuery("select * from User_Info where User_ID='"+userID+"' and Invite_Status='Confirm'");
             //an arraylist to store all projectid's that this user is involved in  
-            
-            
             while(rs2.next())
             {
                 //observableList.add(rs2.getString("projectName"));
@@ -101,7 +99,7 @@ public class mainMenu  {
             //looping through arraylist and adding to observable list to be displayed
             for (int s : alPrjID) {
                 //querying database and adding project details to observable list
-                ResultSet rs3 = st.executeQuery("select * from project where Project_ID='"+s+"' and Project_Status = 'Incomplete' or Project_Status = 'Complete'");
+                ResultSet rs3 = st.executeQuery("select * from project where Project_ID='"+s+"'and Project_Status = 'Incomplete' or Project_Status = 'Complete'");
                 while(rs3.next())
                 {
                     observableList.add(rs3.getString("Project_Name"));
@@ -111,7 +109,7 @@ public class mainMenu  {
                         alPrjOwnrUsrID.add(s);
                         //System.out.println(s);
                     }
-                    observableListDeadline.add(rs3.getString("Project_Deadline"));
+                    observableListNumOfSprints.add(rs3.getString("Project_Num_Sprints"));
                     observableListStatus.add(rs3.getString("Project_Status"));
                     observableListBrief.add(rs3.getString("Project_Brief"));
                     observableListCreated.add(rs3.getString("Project_Created"));
@@ -149,11 +147,11 @@ public class mainMenu  {
         grid.add(prjctCreatedTextField, 6, 6);
         
         
-        Label prjctDeadline = new Label("Project Deadline:");
-        grid.add(prjctDeadline, 5, 7);
-        TextField prjctDeadlineTextField = new TextField();
-        prjctDeadlineTextField.setEditable(false);
-        grid.add(prjctDeadlineTextField, 6, 7);
+        Label prjctSprint = new Label("Number Of Sprint:");
+        grid.add(prjctSprint, 5, 7);
+        TextField prjctSprintTextField = new TextField();
+        prjctSprintTextField.setEditable(false);
+        grid.add(prjctSprintTextField, 6, 7);
         
         Label prjctStatus = new Label("Project Status:");
         grid.add(prjctStatus, 5, 8);
@@ -404,7 +402,7 @@ public class mainMenu  {
                     openBtn.setDisable(false);
                     
                     prjctNameTextField.setText(new_val);
-                    prjctDeadlineTextField.setText(observableListDeadline.get(observableList.indexOf(new_val)));
+                    prjctSprintTextField.setText(observableListNumOfSprints.get(observableList.indexOf(new_val)));
                     prjctStatusTextField.setText(observableListStatus.get(observableList.indexOf(new_val)));
                     briefTextArea.setText(observableListBrief.get(observableList.indexOf(new_val)));
                     prjctOwnrTextField.setText(observableListOwner.get(observableList.indexOf(new_val))); 

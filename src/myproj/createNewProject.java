@@ -1,6 +1,7 @@
 
 package myproj;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -22,6 +25,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -93,7 +97,7 @@ public class createNewProject {
         //button to add teamleader
         Button addBtn = new Button("   Add Team Leader   ");
         HBox hbaddBtn = new HBox(10);
-        hbaddBtn.setAlignment(Pos.BOTTOM_RIGHT);
+        hbaddBtn.setAlignment(Pos.BOTTOM_LEFT);
         hbaddBtn.getChildren().add(addBtn);
         grid.add(hbaddBtn, 2, 5);
         
@@ -105,13 +109,25 @@ public class createNewProject {
         grid.add(hbRemoveBtn, 2, 6);
         
         
-        Label prjctDeadline = new Label("Project Deadline:");
-        grid.add(prjctDeadline, 0, 7);
-        // Create the DatePicker.
-        DatePicker datePicker = new DatePicker();
-        datePicker.setEditable(false);
-        grid.add(datePicker, 1, 7);
+        Label prjNumSprints = new Label("Number of Sprints:");
+        grid.add(prjNumSprints, 0, 7);       
+        ObservableList<String> prjSprintOptions = FXCollections.observableArrayList(
+        "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Other..");
+        ComboBox prjNumSprintCboBox = new ComboBox(prjSprintOptions);
+        grid.add(prjNumSprintCboBox, 1, 7);
+        TextField prjNumSprintsTextField = new TextField();
+        prjNumSprintsTextField.setVisible(false);
+        grid.add(prjNumSprintsTextField, 2, 7); 
         
+        prjNumSprintCboBox.valueProperty().addListener(new ChangeListener<String>() {
+            @Override public void changed(ObservableValue ov, String t, String t1) {                
+                if(t1.equals("Other..")){
+                    prjNumSprintsTextField.setVisible(true); 
+                }else{
+                    prjNumSprintsTextField.setVisible(false); 
+                }
+            }    
+        });
        
         Label prjBrief = new Label("Brief:");
         grid.add(prjBrief, 0, 8);
@@ -218,91 +234,102 @@ public class createNewProject {
                 @Override
                 public void handle(final ActionEvent e) {
                     String getprjName = prjctNameTextField.getText();
-                    //getting selected date 
-                    LocalDate date = datePicker.getValue();
                     //getting other values from field
+                    String numOfSprintChoice = prjSprintOptions.get(prjNumSprintCboBox.getSelectionModel().getSelectedIndex());
                     String getBrief = briefTextArea.getText();
                     String getManifestoPath = prjctManifestoTextField.getText();
                     //Getting current Date
                     java.util.Calendar cal = java.util.Calendar.getInstance();
                     java.util.Date utilDate = cal.getTime();
                     java.sql.Date sqlCurrentDate = new java.sql.Date(utilDate.getTime());
-                    if(!getprjName.equals("") && !observableList.isEmpty() && date != null && getBrief.length()<=3000 ){
-                        // converting localDate to java.util.date and then to sql.Date
-                        Date todate = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
-                        java.sql.Date sqlDate = new java.sql.Date(todate.getTime());
-                        
-                        String allTemLdr = usrFullName + ",";
-                        //converting observablelist to array for future iteration
-                        for(String str : observableList)
-                        {
-                            allTemLdr = allTemLdr + str + ",";
-                        }
-                        String[] arrayOfTemLeaders = allTemLdr.split(",");
-                        
-                        try {
-                            //cheking if project name already taken
-                            //if it does them show error
-                            if (check(getprjName).equals(false))
-                            {
-                                Dialogs.create()
-                                    .owner(primaryStageCreateProject)
-                                    .title("Error")
-                                    .masthead("Oops there was an Error!")
-                                    .message("Sorry the Project Name is already taken, Please use another")
-                                    .showError();
-                            }else{
-                                String sql = "Insert into project (Project_Name, PrjOwnrUser_ID, Project_Deadline, Project_Status, Project_Brief, Project_Manifesto, Project_Created) values (?, ?, ?, ?, ?, ?, ?) ";
-                                PreparedStatement pst = conn.prepareStatement(sql);
-                                pst.setString(1, getprjName);//adding the project name
-                                pst.setInt(2, passdUsrID);//adding the owner name,  by default it is the one who created
-                                pst.setDate(3, sqlDate);//adding the deadline date
-                                pst.setString(4, "Incomplete");// adding the project status, by default it is incomplete
-                                pst.setString(5, getBrief);//adding the project brief
-                                pst.setString(6, getManifestoPath);//adding the path for manifesto
-                                pst.setDate(7, sqlCurrentDate);//adding vurrent date 
-                                //execute 
-                                pst.execute();  
-                                pst.close();
-                            
-                                //first get the project_ID
-                                Statement st=conn.createStatement();
-                                ResultSet rs=st.executeQuery("select * from project where Project_Name='"+getprjName+"' and PrjOwnrUser_ID='"+passdUsrID+"'");
-                                int prjctID = 0;
-                                while(rs.next()){
-                                    prjctID = rs.getInt("Project_ID");
-                                }
-                                st.close();
-                                rs.close();
+                    if(!getprjName.equals("") && !observableList.isEmpty() && getBrief.length()<=3000 && prjNumSprintCboBox.getSelectionModel().getSelectedIndex() >= 0){
 
-                                //time to add to user_info table
-                                userInfo(arrayOfTemLeaders, prjctID, passdUsrID);
-                            
-                                Dialogs.create()
-                                    .owner(primaryStageCreateProject)
-                                    .title("Information")
-                                    .masthead("Good news!")
-                                    .message("Successfully Create a new Project.")
-                                    .showInformation();
-                                observableList.removeAll(observableList);
-                                observableListFrAdd.removeAll(observableListFrAdd);
-                                mainMenu.launchMainMenu(primaryStageCreateProject, passdUsrID);
-                            }
-                            
-                        } catch (SQLException ex) {
+                        if(numOfSprintChoice.equals("Other..") && prjNumSprintsTextField.getText().isEmpty() || !prjNumSprintsTextField.getText().matches("[0-9]+")){
                             Dialogs.create()
                                 .owner(primaryStageCreateProject)
                                 .title("Error")
                                 .masthead("Oops there was an Error!")
-                                .message("Sorry there was a Server Error, Please restart program or contact Admin")
+                                .message("Sorry Please specify the Number of Sprints")
                                 .showError();
+                        }else{
+                            int numOfSprint = 0;
+                            if(numOfSprintChoice.equals("Other..")){
+                                numOfSprint = Integer.parseInt(prjNumSprintsTextField.getText());
+                            }else{
+                                numOfSprint = Integer.parseInt(numOfSprintChoice);
+                            }
+                            String allTemLdr = usrFullName + ",";
+                            //converting observablelist to array for future iteration
+                            for(String str : observableList)
+                            {
+                                allTemLdr = allTemLdr + str + ",";
+                            }
+                            String[] arrayOfTemLeaders = allTemLdr.split(",");
+                        
+                            try {
+                                //cheking if project name already taken
+                                //if it does them show error
+                                if (check(getprjName).equals(false))
+                                {
+                                    Dialogs.create()
+                                        .owner(primaryStageCreateProject)
+                                        .title("Error")
+                                        .masthead("Oops there was an Error!")
+                                        .message("Sorry the Project Name is already taken, Please use another")
+                                        .showError();
+                                }else{
+                                    String sql = "Insert into project (Project_Name, PrjOwnrUser_ID, Project_Num_Sprints, Project_Status, Project_Brief, Project_Manifesto, Project_Created) values (?, ?, ?, ?, ?, ?, ?) ";
+                                    PreparedStatement pst = conn.prepareStatement(sql);
+                                    pst.setString(1, getprjName);//adding the project name
+                                    pst.setInt(2, passdUsrID);//adding the owner name,  by default it is the one who created
+                                    pst.setInt(3, numOfSprint);//adding the deadline date
+                                    pst.setString(4, "Incomplete");// adding the project status, by default it is incomplete
+                                    pst.setString(5, getBrief);//adding the project brief
+                                    pst.setString(6, getManifestoPath);//adding the path for manifesto
+                                    pst.setDate(7, sqlCurrentDate);//adding vurrent date 
+                                    //execute 
+                                    pst.execute();  
+                                    pst.close();
+                            
+                                    //first get the project_ID
+                                    Statement st=conn.createStatement();
+                                    ResultSet rs=st.executeQuery("select * from project where Project_Name='"+getprjName+"' and PrjOwnrUser_ID='"+passdUsrID+"'");
+                                    int prjctID = 0;
+                                    while(rs.next()){
+                                        prjctID = rs.getInt("Project_ID");
+                                    }
+                                    st.close();
+                                    rs.close();
+
+                                    //time to add to user_info table
+                                    userInfo(arrayOfTemLeaders, prjctID, passdUsrID);
+                            
+                                    Dialogs.create()
+                                        .owner(primaryStageCreateProject)
+                                        .title("Information")
+                                        .masthead("Good news!")
+                                        .message("Successfully Create a new Project.")
+                                        .showInformation();
+                                    observableList.removeAll(observableList);
+                                    observableListFrAdd.removeAll(observableListFrAdd);
+                                    mainMenu.launchMainMenu(primaryStageCreateProject, passdUsrID);
+                                }
+                            
+                            } catch (SQLException ex) {
+                                Dialogs.create()
+                                    .owner(primaryStageCreateProject)
+                                    .title("Error")
+                                    .masthead("Oops there was an Error!")
+                                    .message("Sorry there was a Server Error, Please restart program or contact Admin")
+                                    .showError();
+                            }
                         }
                     }else{
                         Dialogs.create()
                             .owner(primaryStageCreateProject)
                             .title("Error")
                             .masthead("Oops there was an Error!")
-                            .message("The Error could be: Missing Fields Or Project Brief over 3000 characters (including space) ")
+                            .message("Please make the following Changes: Populate Missing Fields Or Reduce Project Brief length to 3000 characters or less (including space!) ")
                             .showError();
                     }
                            
