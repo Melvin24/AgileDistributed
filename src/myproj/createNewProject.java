@@ -244,12 +244,12 @@ public class createNewProject {
                     java.sql.Date sqlCurrentDate = new java.sql.Date(utilDate.getTime());
                     if(!getprjName.equals("") && !observableList.isEmpty() && getBrief.length()<=3000 && prjNumSprintCboBox.getSelectionModel().getSelectedIndex() >= 0){
 
-                        if(numOfSprintChoice.equals("Other..") && prjNumSprintsTextField.getText().isEmpty() || !prjNumSprintsTextField.getText().matches("[0-9]+")){
+                        if(numOfSprintChoice.equals("Other..") && !prjNumSprintsTextField.getText().matches("[0-9]+")){
                             Dialogs.create()
                                 .owner(primaryStageCreateProject)
                                 .title("Error")
                                 .masthead("Oops there was an Error!")
-                                .message("Sorry Please specify the Number of Sprints")
+                                .message("Sorry Please specify the Appropriate Number of Sprints")
                                 .showError();
                         }else{
                             int numOfSprint = 0;

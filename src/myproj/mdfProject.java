@@ -86,12 +86,32 @@ public class mdfProject  {
         grid.add(prjctNameTextField, 1, 3); 
         
                 
-        Label prjctDeadline = new Label("Project Deadline:");
-        grid.add(prjctDeadline, 0, 4);
-        // Create the DatePicker.
-        DatePicker datePicker = new DatePicker();
-        datePicker.setEditable(false);
-        grid.add(datePicker, 1, 4);
+//        Label prjctDeadline = new Label("Project Deadline:");
+//        grid.add(prjctDeadline, 0, 4);
+//        // Create the DatePicker.
+//        DatePicker datePicker = new DatePicker();
+//        datePicker.setEditable(false);
+//        grid.add(datePicker, 1, 4);
+        
+        Label prjNumSprints = new Label("Number of Sprints:");
+        grid.add(prjNumSprints, 0, 4);       
+        ObservableList<String> prjSprintOptions = FXCollections.observableArrayList(
+        "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Other..");
+        ComboBox prjNumSprintCboBox = new ComboBox(prjSprintOptions);
+        grid.add(prjNumSprintCboBox, 1, 4);
+        TextField prjNumSprintsTextField = new TextField();
+        prjNumSprintsTextField.setVisible(false);
+        grid.add(prjNumSprintsTextField, 2, 4); 
+        
+        prjNumSprintCboBox.valueProperty().addListener(new ChangeListener<String>() {
+            @Override public void changed(ObservableValue ov, String t, String t1) {                
+                if(t1.equals("Other..")){
+                    prjNumSprintsTextField.setVisible(true); 
+                }else{
+                    prjNumSprintsTextField.setVisible(false); 
+                }
+            }    
+        });
         
         Label prjctStatus = new Label("Project Status:");
         grid.add(prjctStatus,0, 5);
@@ -99,7 +119,6 @@ public class mdfProject  {
             "Incomplete",
             "Complete"  );
         ComboBox statusCboBox = new ComboBox(prjStatusOptions);
-        statusCboBox.setValue("Incomplete");
         grid.add(statusCboBox, 1, 5); 
         
         Label prjBrief = new Label("Brief:");
@@ -187,14 +206,8 @@ public class mdfProject  {
             while(rs.next()){
                 prjctNameTextField.setText(rs.getString("Project_Name"));
                 prjctOwnrTextField.setText(getName(rs.getInt("PrjOwnrUser_ID")));
-                //getting the sql date from db
-                java.sql.Date sqlDate = rs.getDate("Project_Deadline");
-                //converting to util date
-                java.util.Date newDate = new java.util.Date(sqlDate.getTime());
-                //converting to localDate
-                LocalDate dates = newDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                //assigning the date
-                datePicker.setValue(dates);
+                statusCboBox.setValue(rs.getString("Project_Status"));
+                prjNumSprintCboBox.setValue(rs.getString("Project_Num_Sprints"));
                 briefTextArea.setText(rs.getString("Project_Brief"));
                 prjctManifestoTextField.setText(rs.getString("Project_Manifesto"));
             }
@@ -220,47 +233,57 @@ public class mdfProject  {
                 @Override
                 public void handle(final ActionEvent e) {
                     String prjName = prjctNameTextField.getText();
-                    //getting selected date 
-                    LocalDate date = datePicker.getValue();
+                    String numOfSprintChoice = prjSprintOptions.get(prjNumSprintCboBox.getSelectionModel().getSelectedIndex());
+                    System.out.println(numOfSprintChoice);
                     String prjStatus = prjStatusOptions.get(statusCboBox.getSelectionModel().getSelectedIndex());
                     //System.out.println(prjStatusOptions.get(statusCboBox.getSelectionModel().getSelectedIndex()));
                     String getBrief = briefTextArea.getText();
                     String getManifestoPath = prjctManifestoTextField.getText();
-                    if(!prjName.equals("") && date != null && getBrief.length()<=3000 ){
-                        // converting localDate to java.util.date and then to sql.Date
-                        Date todate = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
-                        java.sql.Date sqlDate = new java.sql.Date(todate.getTime());
+                    if(!prjName.equals("") && getBrief.length()<=3000 ){
                         try{
-                                //cheking only if project name changed and see if the new project name already taken 
-                                //if it does them show error
-                                if (!prjName.equalsIgnoreCase(oldProjectName) && createNewProject.check(prjName).equals(false))
-                                {
+                            //cheking only if project name changed and see if the new project name already taken 
+                            //if it does them show error
+                            if (!prjName.equalsIgnoreCase(oldProjectName) && createNewProject.check(prjName).equals(false))
+                            {
+                            Dialogs.create()
+                                .owner(primaryStageMdfyPrj)
+                                .title("Error")
+                                .masthead("Oops there was an Error!")
+                                .message("Sorry the Project Name is already taken, Please use another")
+                                .showError();
+                            }else if(numOfSprintChoice.equals("Other..") && !prjNumSprintsTextField.getText().matches("[0-9]+")){
                                 Dialogs.create()
                                     .owner(primaryStageMdfyPrj)
                                     .title("Error")
                                     .masthead("Oops there was an Error!")
-                                    .message("Sorry the Project Name is already taken, Please use another")
+                                    .message("Sorry Please specify the Appropriate Number of Sprints")
                                     .showError();
+                            }else{
+                                int numOfSprint = 0;
+                                if(numOfSprintChoice.equals("Other..")){
+                                    numOfSprint = Integer.parseInt(prjNumSprintsTextField.getText());
                                 }else{
-                                    String sql = "update project set Project_Name = ?, Project_Deadline =?, Project_Status = ?, Project_Brief = ?, Project_Manifesto =? where Project_ID = ?";
-                                    PreparedStatement pst = conn.prepareStatement(sql);
-                                    pst.setString(1, prjName);
-                                    pst.setDate(2, sqlDate);
-                                    pst.setString(3, prjStatus);
-                                    pst.setString(4, getBrief);
-                                    pst.setString(5, getManifestoPath);
-                                    pst.setInt(6, prjID);
+                                    numOfSprint = Integer.parseInt(numOfSprintChoice);
+                                }
+                                String sql = "update project set Project_Name = ?, Project_Num_Sprints =?, Project_Status = ?, Project_Brief = ?, Project_Manifesto =? where Project_ID = ?";
+                                PreparedStatement pst = conn.prepareStatement(sql);
+                                pst.setString(1, prjName);
+                                pst.setInt(2, numOfSprint);
+                                pst.setString(3, prjStatus);
+                                pst.setString(4, getBrief);
+                                pst.setString(5, getManifestoPath);
+                                pst.setInt(6, prjID);
 
-                                    pst.execute();
-                                    Dialogs.create()
-                                        .owner(primaryStageMdfyPrj)
-                                        .title("Information")
-                                        .masthead("Good news!")
-                                        .message("Successfully Modified")
-                                        .showInformation();
-                                    //refreshing the page
-                                    mdfProject.launchMdfPrj(primaryStageMdfyPrj, prjID, userID);
-                                    pst.close();
+                                pst.execute();
+                                Dialogs.create()
+                                    .owner(primaryStageMdfyPrj)
+                                    .title("Information")
+                                    .masthead("Good news!")
+                                    .message("Successfully Modified")
+                                    .showInformation();
+                                //refreshing the page
+                                mdfProject.launchMdfPrj(primaryStageMdfyPrj, prjID, userID);
+                                pst.close();
                             }
                             
                         }catch (SQLException ex) {

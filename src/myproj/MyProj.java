@@ -27,9 +27,9 @@ public class MyProj extends Application {
     public void start(Stage primaryStage) throws Exception {
         //String[] args;
         //MD5.main(args);
-        login.launchGUI(primaryStage);
+        //login.launchGUI(primaryStage);
         //register.launchRgst(primaryStage);
-        //mainMenu.launchMainMenu(primaryStage, 8);
+        mainMenu.launchMainMenu(primaryStage, 8);
         //mdfAccount.launchMdfAcc(primaryStage, 10);
         //String[] array = null;
         //createNewProject.userInfo(array, 2, 2);

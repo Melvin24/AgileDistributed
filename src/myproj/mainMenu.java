@@ -78,9 +78,9 @@ public class mainMenu  {
         ListView<String> listView = new ListView<String>(observableList);
         listView.setPrefSize(200, 350); 
         grid.add(listView,1, 4,1, 7);
-        List<Integer> alPrjOwnrUsrID = new ArrayList<>();
-        List<Integer> alPrjID = new ArrayList<>();
-        List<Integer> alTemID = new ArrayList<>();
+        ObservableList<Integer> alPrjOwnrUsrID = FXCollections.observableArrayList();
+        ObservableList<Integer> alPrjID = FXCollections.observableArrayList();
+        ObservableList<Integer> alTemID = FXCollections.observableArrayList();
         try{
             Statement st=conn.createStatement();
             //sql to get user id from the user info table but only get the once that have confirmed to a project
@@ -94,28 +94,44 @@ public class mainMenu  {
                 observableListYurRole.add(rs2.getString("Role_Type"));
             }
             rs2.close();
-            
-            
-            //looping through arraylist and adding to observable list to be displayed
+            int count = 0;
+            //an array list to store the index of the top observablelist's that will not be added to sub Observable lists
+            List<Integer> alUnusedIndex = new ArrayList<>();
+            //looping through alPrjID obList and adding to subObservable list to be displayed
             for (int s : alPrjID) {
+                
                 //querying database and adding project details to observable list
-                ResultSet rs3 = st.executeQuery("select * from project where Project_ID='"+s+"'and Project_Status = 'Incomplete' or Project_Status = 'Complete'");
+                ResultSet rs3 = st.executeQuery("select * from project where Project_ID='"+s+"'");
                 while(rs3.next())
                 {
-                    observableList.add(rs3.getString("Project_Name"));
-                    observableListOwner.add(getName(rs3.getInt("PrjOwnrUser_ID")));
-                    if(userID == rs3.getInt("PrjOwnrUser_ID"))
-                    {
-                        alPrjOwnrUsrID.add(s);
-                        //System.out.println(s);
+                    if(rs3.getString("Project_Status").equals("Incomplete") || rs3.getString("Project_Status").equals("Complete")){
+                        observableList.add(rs3.getString("Project_Name"));
+                        observableListOwner.add(getName(rs3.getInt("PrjOwnrUser_ID")));
+                        if(userID == rs3.getInt("PrjOwnrUser_ID"))
+                        {
+                            alPrjOwnrUsrID.add(s);
+                            //System.out.println(s);
+                        }
+                        observableListNumOfSprints.add(rs3.getString("Project_Num_Sprints"));
+                        observableListStatus.add(rs3.getString("Project_Status"));
+                        observableListBrief.add(rs3.getString("Project_Brief"));
+                        observableListCreated.add(rs3.getString("Project_Created"));
+                    }else{
+                        alUnusedIndex.add(count);
                     }
-                    observableListNumOfSprints.add(rs3.getString("Project_Num_Sprints"));
-                    observableListStatus.add(rs3.getString("Project_Status"));
-                    observableListBrief.add(rs3.getString("Project_Brief"));
-                    observableListCreated.add(rs3.getString("Project_Created"));
+                    count++;
+                    
                 }
-                rs3.close();
-                
+                rs3.close(); 
+            }
+            //removing details of projects that are disabled from the obList's
+            for (int i = 0; i < alUnusedIndex.size(); i++) {
+                //System.out.println("removing prjID: " + alPrjID.get(i));
+                alPrjID.remove(i);
+                //System.out.println("removing TemID: " + alTemID.get(i));
+                alTemID.remove(i);
+                //System.out.println("removing YourRole Type: " + observableListYurRole.get(i));
+                observableListYurRole.remove(i);
             }
             
         }catch(Exception e){
