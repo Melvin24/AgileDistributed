@@ -89,7 +89,9 @@ public class invite  {
                 observableListYurRole.add(rs2.getString("Role_Type"));
             }
             rs2.close();
-            
+            int count = 0;
+            //an array list to store the index of the top observablelist's that will not be added to sub Observable lists
+            List<Integer> alUnusedIndex = new ArrayList<>();
             
             //looping through arraylist and adding to observable list to be displayed
             for (int s : alPrjID) {
@@ -97,14 +99,24 @@ public class invite  {
                 ResultSet rs3 = st.executeQuery("select * from project where Project_ID='"+s+"'");
                 while(rs3.next())
                 {
-                    observableListInvites.add(rs3.getString("Project_Name"));
-                    observableListOwner.add(getName(rs3.getInt("PrjOwnrUser_ID")));
-                    observableListSprint.add(rs3.getString("Project_Num_Sprints"));
-                    observableListBrief.add(rs3.getString("Project_Brief"));
-                    observableListCreated.add(rs3.getString("Project_Created"));
+                    if(rs3.getString("Project_Status").equals("Incomplete") || rs3.getString("Project_Status").equals("Complete")){
+                        observableListInvites.add(rs3.getString("Project_Name"));
+                        observableListOwner.add(getName(rs3.getInt("PrjOwnrUser_ID")));
+                        observableListSprint.add(rs3.getString("Project_Num_Sprints"));
+                        observableListBrief.add(rs3.getString("Project_Brief"));
+                        observableListCreated.add(rs3.getString("Project_Created"));
+                    }else{
+                        alUnusedIndex.add(count);
+                    }
                 }
+                count++;
                 rs3.close();
-                
+            }
+            
+            //removing details of projects that are disabled from the obList's
+            for (int i = 0; i < alUnusedIndex.size(); i++) {
+                alPrjID.remove(i);
+                observableListYurRole.remove(i);
             }
             
         }catch(Exception e){

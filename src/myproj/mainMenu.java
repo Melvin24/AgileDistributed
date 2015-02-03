@@ -119,9 +119,10 @@ public class mainMenu  {
                     }else{
                         alUnusedIndex.add(count);
                     }
-                    count++;
+
                     
                 }
+                count++;
                 rs3.close(); 
             }
             //removing details of projects that are disabled from the obList's
@@ -217,16 +218,8 @@ public class mainMenu  {
                      
                     if (confirm == Dialog.ACTION_YES) { 
                         try{
-//                            //get the project ID of the project that is to be deleted
+                            //get the project ID of the project that is to be deleted
                             int slctdPrjID = alPrjID.get(listView.getSelectionModel().getSelectedIndex());
-//                            Statement stateMnt=conn.createStatement();
-//                            stateMnt.execute("delete from User_Info where Project_ID ='"+slctdPrjID+"'");
-//                            //check if a team exist for the projectID  = i
-//                            if(check(slctdPrjID).equals(false)){
-//                               stateMnt.execute("delete from team where Project_ID='"+slctdPrjID+"'"); 
-//                            }
-//                            stateMnt.execute("delete from project where Project_ID='"+slctdPrjID+"'");
-                            //set project_Status as "Disabled"
                             String sql = "update project set Project_Status = 'Disabled' where Project_ID = ?";
                             PreparedStatement pst = conn.prepareStatement(sql);
                             pst.setInt(1, slctdPrjID);
