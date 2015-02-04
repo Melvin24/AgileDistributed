@@ -87,7 +87,7 @@ public class login  {
                 try{
                         Statement st=conn.createStatement();
                         //System.out.println("This is the non-hash: "+ hashing.retrieveIt(usrPass));
-                        ResultSet rs=st.executeQuery("select * from login where username='"+usrName+"' and password='"+usrPass+"'");
+                        ResultSet rs=st.executeQuery("select * from login where username='"+usrName+"' and password='"+usrPass+"' and Account_Status = 'Active'");
                         
                         int count=0;
                         while(rs.next()){

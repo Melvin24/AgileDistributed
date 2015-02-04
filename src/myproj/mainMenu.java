@@ -224,7 +224,7 @@ public class mainMenu  {
                             PreparedStatement pst = conn.prepareStatement(sql);
                             pst.setInt(1, slctdPrjID);
                             pst.execute();
-                            
+                            pst.close();
                             int selectedIdx = listView.getSelectionModel().getSelectedIndex();
                             if (selectedIdx != -1) {
                                 int newSelectedIdx = (selectedIdx == listView.getItems().size() - 1)
@@ -314,29 +314,39 @@ public class mainMenu  {
 
                 if (response == Dialog.ACTION_YES) {
                     try {
-                            Statement st=conn.createStatement();
                             //loop through the alPrjOwnrUsrID arraylist and delete the project from the project table, team table and User_Info table 
                             //this loop deletes all data associated with the project whose project ownere is the current user 
                             for(int i: alPrjOwnrUsrID)
                             {
-                                st.execute("delete from User_Info where Project_ID ='"+i+"'");
                                 //check if a team exist for the projectID  = i
                                 if(check(i).equals(false)){
-                                   st.execute("delete from team where Project_ID='"+i+"'"); 
+                                   //then disable those teams
+                                   String sql = "update team set Team_Status = 'Disabled' where Project_ID = ?";
+                                   PreparedStatement pst = conn.prepareStatement(sql);
+                                   pst.setInt(1, i);
+                                   pst.execute();
+                                   pst.close();
                                 }
-                                st.execute("delete from project where Project_ID='"+i+"'");
+                                //then disable the project also
+                                String sql2 = "update project set Project_Status = 'Disabled' where Project_ID = ?";
+                                PreparedStatement pst2 = conn.prepareStatement(sql2);
+                                pst2.setInt(1, i);
+                                pst2.execute();
+                                pst2.close();
                             }
-                            //deleting all rest of data associated with this user from the User_Info table
-                            st.execute("delete from User_Info where User_ID ='"+userID+"'");
-                            //finally delete this user from the login table
-                            st.execute("delete from login where User_ID ='"+userID+"'");
+                            //Now disable the user also
+                            String sql3 = "update login set Account_Status = 'Disabled' where User_ID = ?";
+                            PreparedStatement pst3 = conn.prepareStatement(sql3);
+                            pst3.setInt(1, userID);
+                            pst3.execute();
+                            pst3.close();
+                            
                             Dialogs.create()
                                 .owner(primaryStageMainMenu)
                                 .title("Information")
                                 .masthead("Good news!")
                                 .message("Successfully Deleted.")
                                 .showInformation();
-                            st.close();
                             login.launchGUI(primaryStageMainMenu);
                             
                         } catch (SQLException ex) {

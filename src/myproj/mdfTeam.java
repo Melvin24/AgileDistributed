@@ -141,7 +141,7 @@ public class mdfTeam {
         //Populating required fields
         try{
             Statement st=conn.createStatement();
-            ResultSet rs=st.executeQuery("select * from team where Team_ID='"+temID+"'");
+            ResultSet rs=st.executeQuery("select * from team where Team_ID='"+temID+"' and Team_Status = 'Active'");
 
             while(rs.next()){
                 temNameTextField.setText(rs.getString("Team_Name"));
@@ -414,7 +414,7 @@ public class mdfTeam {
             rs.close();
 
             //now get the users names that are in the usrIdOfThsPrj list
-            ResultSet rs2=st.executeQuery("select * from login");
+            ResultSet rs2=st.executeQuery("select * from login where Account_Status = 'Active'");
             while(rs2.next()){
                 if(usrIdOfThsPrj.contains(rs2.getInt("User_ID")))
                 {
@@ -450,7 +450,7 @@ public class mdfTeam {
             
             //usrIdOfThsPrj.co
             //now get the users that are not in the usrIdOfThsPrj list
-            ResultSet rs2=st.executeQuery("select * from login");
+            ResultSet rs2=st.executeQuery("select * from login where Account_Status = 'Active'");
             while(rs2.next()){
                 if(!usrId.contains(rs2.getInt("User_ID")))
                 {
@@ -491,7 +491,8 @@ public class mdfTeam {
     {
         try{
             Statement st=conn.createStatement();
-            ResultSet rs=st.executeQuery("select * from team where Team_Name='"+temName+"'");
+            //if a team is disabled then allow users to use the existing team names 
+            ResultSet rs=st.executeQuery("select * from team where Team_Name='"+temName+"' and Team_Status = 'Active'");
 
             int count=0;
             while(rs.next()){

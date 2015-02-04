@@ -592,7 +592,7 @@ public class mdfProject  {
             rs.close();
 
             //now get the users names that are in the usrIdOfThsPrj list
-            ResultSet rs2=st.executeQuery("select * from login");
+            ResultSet rs2=st.executeQuery("select * from login where Account_Status = 'Active'");
             while(rs2.next()){
                 if(usrIdOfThsPrj.contains(rs2.getInt("User_ID")))
                 {
@@ -628,7 +628,7 @@ public class mdfProject  {
             
             //usrIdOfThsPrj.co
             //now get the users that are not in the usrIdOfThsPrj list
-            ResultSet rs2=st.executeQuery("select * from login");
+            ResultSet rs2=st.executeQuery("select * from login where Account_Status = 'Active'");
             while(rs2.next()){
                 if(!usrId.contains(rs2.getInt("User_ID")))
                 {

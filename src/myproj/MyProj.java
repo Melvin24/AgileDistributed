@@ -28,15 +28,15 @@ public class MyProj extends Application {
         //String hello = hashing.getMD5("password");
         //String[] args;
         //MD5.main(args);
-        //login.launchGUI(primaryStage);
+        login.launchGUI(primaryStage);
         //register.launchRgst(primaryStage);
-        mainMenu.launchMainMenu(primaryStage, 13);
+        //mainMenu.launchMainMenu(primaryStage, 13);
         //mdfAccount.launchMdfAcc(primaryStage, 10);
         //String[] array = null;
         //createNewProject.userInfo(array, 2, 2);
         //invite.launchInvite(primaryStage, 13);
         //createTeam.launchacceptInvite(primaryStage, 8, 31);
-        //mdfProject.launchMdfPrj(primaryStage, 32, 10);
+        //mdfProject.launchMdfPrj(primaryStage, 32, 13);
         //mdfTeam.launchMdfTem(primaryStage, 31, 8, 4);
         //createNewProject.launchCreateProject(primaryStage, 15);
 //        int userPass = hashing.hashIt("admin");
