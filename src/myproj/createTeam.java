@@ -398,7 +398,7 @@ public class createTeam  {
             
             //usrIdOfThsPrj.co
             //now get the users that are not in the usrIdOfThsPrj list
-            ResultSet rs2=st.executeQuery("select * from login");
+            ResultSet rs2=st.executeQuery("select * from login where Account_Status = 'Active'");
             while(rs2.next()){
                 if(!usrIdOfThsPrj.contains(rs2.getInt("User_ID")))
                 {

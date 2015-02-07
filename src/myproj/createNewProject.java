@@ -392,7 +392,7 @@ public class createNewProject {
         //getting items for the list ready before user select 'add'
         try{
             Statement st=conn.createStatement();
-            ResultSet rs=st.executeQuery("select * from login");
+            ResultSet rs=st.executeQuery("select * from login where Account_Status = 'Active'");
 
             while(rs.next()){
                 //the project owner i.e the one creating the project cannot be a team leader of this project

@@ -75,9 +75,11 @@ public class mainMenu  {
         ObservableList<String> observableListYurRole = FXCollections.observableArrayList();
         ObservableList<String> observableListBrief = FXCollections.observableArrayList();
         ObservableList<String> observableListCreated = FXCollections.observableArrayList();
+        
         ListView<String> listView = new ListView<String>(observableList);
         listView.setPrefSize(200, 350); 
         grid.add(listView,1, 4,1, 7);
+        
         ObservableList<Integer> alPrjOwnrUsrID = FXCollections.observableArrayList();
         ObservableList<Integer> alPrjID = FXCollections.observableArrayList();
         ObservableList<Integer> alTemID = FXCollections.observableArrayList();

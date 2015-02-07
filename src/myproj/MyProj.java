@@ -25,10 +25,12 @@ public class MyProj extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        //burnDown.launchBurnDown(primaryStage);
+        chooseSprint.launchGUISprint(primaryStage);
         //String hello = hashing.getMD5("password");
         //String[] args;
         //MD5.main(args);
-        login.launchGUI(primaryStage);
+        //login.launchGUI(primaryStage);
         //register.launchRgst(primaryStage);
         //mainMenu.launchMainMenu(primaryStage, 13);
         //mdfAccount.launchMdfAcc(primaryStage, 10);
