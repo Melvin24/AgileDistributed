@@ -18,6 +18,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -28,9 +29,11 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBoxBuilder;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
@@ -67,16 +70,10 @@ public class chooseSprint {
         ObservableList<Integer> observableListSprintID = FXCollections.observableArrayList();
         ObservableList<Date> observableListSprtStrtDate = FXCollections.observableArrayList();
         ObservableList<Integer> observableListSprtDuration = FXCollections.observableArrayList();
-        //obList to store Story IDs associated with sprints
-        ObservableList<Integer> observableListStoryID = FXCollections.observableArrayList();
-        //obList to store all the time_left for tasks that are completed
-        ObservableList<Integer> observableListTimeLeft = FXCollections.observableArrayList();
-        //obList to store all the date of starting for tasks that are Started
-        ObservableList<Date> observableListDateStart = FXCollections.observableArrayList();
-        //obList to store all the date of completing for tasks that are completed
-        ObservableList<Date> observableListDateComplete = FXCollections.observableArrayList();
+
+        
         ListView<String> listView = new ListView<String>(observableList);
-        listView.setPrefSize(200, 350); 
+        listView.setPrefSize(200, 400); 
         grid.add(listView,1, 4,1, 7);
         
         Button btn = new Button("View Burndown Chart");
@@ -113,6 +110,18 @@ public class chooseSprint {
             @Override
             public void handle(ActionEvent e) {
                 try{
+                    //obList to store Story IDs associated with sprints
+                    ObservableList<Integer> observableListStoryID = FXCollections.observableArrayList();
+                    //obList to store all the time_left for tasks that are completed
+                    ObservableList<Integer> observableListTimeLeft = FXCollections.observableArrayList();
+                    //obList to store all the date of starting for tasks that are Started
+                    ObservableList<Date> observableListDateStart = FXCollections.observableArrayList();
+                    //obList to store all the date of completing for tasks that are completed
+                    ObservableList<Date> observableListDateComplete = FXCollections.observableArrayList();
+                    //an int variable to count the total time allocated for this sprint
+                    int totalTime = 0;
+                    int totalNumOfTask = 0;
+                    String sprintTitle = observableList.get(listView.getSelectionModel().getSelectedIndex());
                     int sprntID = observableListSprintID.get(listView.getSelectionModel().getSelectedIndex());
                     int sprintDuration = observableListSprtDuration.get(listView.getSelectionModel().getSelectedIndex());
                     Date startDate = observableListSprtStrtDate.get(listView.getSelectionModel().getSelectedIndex());
@@ -129,9 +138,7 @@ public class chooseSprint {
                         
                     }
                     rs.close();
-                    //an int variable to count the total time allocated for this sprint
-                    int totalTime = 0;
-                    int totalNumOfTask = 0;
+                    
                     
                     for(int s: observableListStoryID){
                         ResultSet rs2 = st.executeQuery("select * from Tasks where Story_ID = '"+s+"'");
@@ -148,10 +155,31 @@ public class chooseSprint {
                         }
                         rs2.close();
                     }
-                    System.out.println("total num of task: " + totalNumOfTask);
+                    //System.out.println("total num of task: " + totalNumOfTask);
                     st.close();
-                    burnDown.launchBurnDown(primaryStageSprint, observableListTimeLeft, observableListDateStart, observableListDateComplete, totalTime, sprintDuration, totalNumOfTask);
+                    LineChart<Number, Number> createGraph = startBurnDown.createGraph(sprintTitle, observableListTimeLeft, observableListDateStart, observableListDateComplete, totalTime, sprintDuration, totalNumOfTask);
 
+                    final Stage myDialog = new Stage();
+                    myDialog.initModality(Modality.WINDOW_MODAL);
+                    
+                    Button backBtn = new Button("Go Back");
+                    backBtn.setOnAction(new EventHandler<ActionEvent>(){
+ 
+                    @Override
+                    public void handle(ActionEvent arg0) {
+                        myDialog.close();
+                    }
+               
+                    });
+                    
+                    Scene myDialogScene = new Scene(VBoxBuilder.create()
+                     .children(createGraph, backBtn)
+                     .alignment(Pos.CENTER)
+                     .padding(new Insets(10))
+                     .build());
+           
+                    myDialog.setScene(myDialogScene);
+                    myDialog.show();
                 }catch(Exception ex){
                     Dialogs.create()
                 .owner(primaryStageSprint)
@@ -159,9 +187,9 @@ public class chooseSprint {
                 .masthead("Oops there was an Error!")
                 .message("Sorry there was a Server Error, Please restart program or contact Admin")
                 .showError();
-        } 
+                } 
             }
-         });
+        });
             
         
         root.getChildren().add(grid);
@@ -202,7 +230,7 @@ public class chooseSprint {
            
         primaryStageSprint.setScene(scene);
         
-        primaryStageSprint.setResizable(false);
+        //primaryStageSprint.setResizable(false);
         primaryStageSprint.show();
     }
 }
