@@ -398,11 +398,18 @@ public class mainMenu  {
         });
         menu3ItemC.setDisable(true);
         
-        MenuItem menu3ItemD = new MenuItem("Invites");
+        MenuItem menu3ItemD = new MenuItem("View Burndown");
         menu3ItemD.setOnAction(new EventHandler<ActionEvent>() {
         @Override public void handle(ActionEvent e) {
+            int prjID = alPrjID.get(listView.getSelectionModel().getSelectedIndex());
+            chooseSprint.launchGUISprint(primaryStageMainMenu, prjID);
+        }
+        });
+        
+        MenuItem menu3ItemE = new MenuItem("Invites");
+        menu3ItemE.setOnAction(new EventHandler<ActionEvent>() {
+        @Override public void handle(ActionEvent e) {
             invite.launchInvite(primaryStageMainMenu, userID);
-            //mdfAccount.launchMdfAcc(primaryStageMainMenu, usrInfo);
         }
         });
         
@@ -410,6 +417,7 @@ public class mainMenu  {
         menuPhase3.getItems().add(menu3ItemB);
         menuPhase3.getItems().add(menu3ItemC);
         menuPhase3.getItems().add(menu3ItemD);
+        menuPhase3.getItems().add(menu3ItemE);
         menuBar.getMenus().add(menuPhase3);
         
         menuBar.prefWidthProperty().bind(primaryStageMainMenu.widthProperty());

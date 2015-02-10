@@ -37,9 +37,11 @@ import javafx.scene.control.TextAreaBuilder;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javax.swing.JOptionPane;
@@ -65,7 +67,7 @@ public class mdfProject  {
     public static void startModify(Stage primaryStageMdfyPrj, int prjID, int userID) {
         primaryStageMdfyPrj.setTitle("Modify Project");
         Group root = new Group();
-        Scene scene = new Scene(root, 550, 550);
+        Scene scene = new Scene(root, 550, 600);
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
@@ -85,13 +87,7 @@ public class mdfProject  {
         TextField prjctNameTextField = new TextField();
         grid.add(prjctNameTextField, 1, 3); 
         
-                
-//        Label prjctDeadline = new Label("Project Deadline:");
-//        grid.add(prjctDeadline, 0, 4);
-//        // Create the DatePicker.
-//        DatePicker datePicker = new DatePicker();
-//        datePicker.setEditable(false);
-//        grid.add(datePicker, 1, 4);
+
         
         Label prjNumSprints = new Label("Number of Sprints:");
         grid.add(prjNumSprints, 0, 4);       
@@ -133,71 +129,104 @@ public class mdfProject  {
         briefScrollPane.setPrefWidth(10);
         briefScrollPane.setPrefHeight(100);
         grid.add(briefScrollPane,1, 6);
+        Label briefInputCount = new Label("Max Input: 0/3000");
+        briefInputCount.setAlignment(Pos.TOP_LEFT);
+        grid.add(briefInputCount, 2, 6);
+        
+        //a listener for the projectBrief text area
+        briefTextArea.setOnKeyTyped((javafx.scene.input.KeyEvent ke) -> {
+            int briefLength = briefTextArea.getLength() + 1;
+            //change the input according to the input length
+            briefInputCount.setText("Max Input: " + briefLength + "/3000");
+            
+            //if length greater than 3000 char then change color of label to RED
+            if(briefLength > 3000){
+                briefInputCount.setTextFill(Color.rgb(255, 0, 0));
+                
+            }else{
+                briefInputCount.setTextFill(Color.rgb(0, 0, 0));
+            }
+                
+        });
+        
+        Label prjctDirtry = new Label("Project Directory:");
+        grid.add(prjctDirtry, 0, 7);
+        TextField prjctDirtryTextField = new TextField();
+        prjctDirtryTextField.setEditable(false);
+        grid.add(prjctDirtryTextField, 1, 7);
+        
+        
+        Button chooseDirtryBtn = new Button("     Select Directory    ");
+        HBox hbChooseDirtryBtn = new HBox(10);
+        hbChooseDirtryBtn.setAlignment(Pos.BOTTOM_LEFT);
+        hbChooseDirtryBtn.getChildren().add(chooseDirtryBtn);
+        grid.add(hbChooseDirtryBtn, 2, 7); 
         
         Label prjctManifesto = new Label("Project Manifesto:");
-        grid.add(prjctManifesto, 0, 7);
+        grid.add(prjctManifesto, 0, 8);
         TextField prjctManifestoTextField = new TextField();
-        grid.add(prjctManifestoTextField, 1, 7);
+        prjctManifestoTextField.setEditable(false);
+        grid.add(prjctManifestoTextField, 1, 8);
                 
         Button chooseBtn = new Button("    Select Manifesto    ");
         HBox hbChooseBtn = new HBox(10);
         hbChooseBtn.setAlignment(Pos.BOTTOM_LEFT);
         hbChooseBtn.getChildren().add(chooseBtn);
-        grid.add(hbChooseBtn, 2, 7); 
+        grid.add(hbChooseBtn, 2, 8); 
         
         Button mdfyBtn = new Button("        Modify        ");
         HBox hbBtn = new HBox(10);
         hbBtn.setAlignment(Pos.BOTTOM_CENTER);
         hbBtn.getChildren().add(mdfyBtn);
-        grid.add(hbBtn, 1, 8);
+        grid.add(hbBtn, 1, 9);
         
         Text subtitle = new Text("Modify Team");
         subtitle.setFont(Font.font("Tahoma", FontWeight.BOLD, 15));
-        grid.add(subtitle, 0, 9);
+        grid.add(subtitle, 0, 10);
         
         Label prjctOwnr = new Label("Project Owner:");
-        grid.add(prjctOwnr,0, 10);
+        grid.add(prjctOwnr,0, 11);
         TextField prjctOwnrTextField = new TextField();
         prjctOwnrTextField.setEditable(false);
-        grid.add(prjctOwnrTextField, 1, 10); 
+        grid.add(prjctOwnrTextField, 1, 11); 
         
         //button to change project owner
         Button changeBtn = new Button("     Change Owner     ");
         HBox hbChangeBtn = new HBox(10);
         hbChangeBtn.setAlignment(Pos.BOTTOM_LEFT);
         hbChangeBtn.getChildren().add(changeBtn);
-        grid.add(hbChangeBtn, 2, 10);
+        grid.add(hbChangeBtn, 2, 11);
         
         Label prjTemLeadrs = new Label("Team Leaders:");
-        grid.add(prjTemLeadrs, 0, 11);
+        grid.add(prjTemLeadrs, 0, 12);
         
         ListView<String> listView = new ListView<String>(observableList);
         listView.setPrefSize(10, 70); 
-        grid.add(listView,1,11);      
+        grid.add(listView,1,12);      
 
         Button addBtn = new Button("   Add Team Leader   ");
         HBox hbAddBtn = new HBox(10);
         hbAddBtn.setAlignment(Pos.BOTTOM_LEFT);
         hbAddBtn.getChildren().add(addBtn);
-        grid.add(hbAddBtn, 2, 11); 
+        grid.add(hbAddBtn, 2, 12); 
         
         Button rmvBtn = new Button("Remove Team Leader");
         HBox hbDeleteBtn = new HBox(10);
         hbDeleteBtn.setAlignment(Pos.BOTTOM_LEFT);
         hbDeleteBtn.getChildren().add(rmvBtn);
-        grid.add(hbDeleteBtn, 2, 12); 
+        grid.add(hbDeleteBtn, 2, 13); 
         
         Button cancelBtn = new Button("Go Back");
         HBox hbCancelBtn = new HBox(10);
         hbCancelBtn.setAlignment(Pos.BOTTOM_RIGHT);
         hbCancelBtn.getChildren().add(cancelBtn);
-        grid.add(hbCancelBtn, 0, 13); 
+        grid.add(hbCancelBtn, 0, 14); 
         
         Button saveBtn = new Button("Save Changes");
         HBox hbSaveBtn = new HBox(10);
         hbSaveBtn.setAlignment(Pos.BOTTOM_CENTER);
         hbSaveBtn.getChildren().add(saveBtn);
-        grid.add(hbSaveBtn, 1, 13); 
+        grid.add(hbSaveBtn, 1, 14); 
         //Populating required fields
         try{
             Statement st=conn.createStatement();
@@ -209,6 +238,8 @@ public class mdfProject  {
                 statusCboBox.setValue(rs.getString("Project_Status"));
                 prjNumSprintCboBox.setValue(rs.getString("Project_Num_Sprints"));
                 briefTextArea.setText(rs.getString("Project_Brief"));
+                briefInputCount.setText("Max Input: " + briefTextArea.getLength() + "/3000");
+                prjctDirtryTextField.setText(rs.getString("Project_Directory"));
                 prjctManifestoTextField.setText(rs.getString("Project_Manifesto"));
             }
             st.close();
@@ -234,10 +265,10 @@ public class mdfProject  {
                 public void handle(final ActionEvent e) {
                     String prjName = prjctNameTextField.getText();
                     String numOfSprintChoice = prjSprintOptions.get(prjNumSprintCboBox.getSelectionModel().getSelectedIndex());
-                    System.out.println(numOfSprintChoice);
                     String prjStatus = prjStatusOptions.get(statusCboBox.getSelectionModel().getSelectedIndex());
                     //System.out.println(prjStatusOptions.get(statusCboBox.getSelectionModel().getSelectedIndex()));
                     String getBrief = briefTextArea.getText();
+                    String getprjDirctry = prjctDirtryTextField.getText();
                     String getManifestoPath = prjctManifestoTextField.getText();
                     if(!prjName.equals("") && getBrief.length()<=3000 ){
                         try{
@@ -265,14 +296,15 @@ public class mdfProject  {
                                 }else{
                                     numOfSprint = Integer.parseInt(numOfSprintChoice);
                                 }
-                                String sql = "update project set Project_Name = ?, Project_Num_Sprints =?, Project_Status = ?, Project_Brief = ?, Project_Manifesto =? where Project_ID = ?";
+                                String sql = "update project set Project_Name = ?, Project_Num_Sprints =?, Project_Status = ?, Project_Brief = ?, Project_Directory = ?, Project_Manifesto =? where Project_ID = ?";
                                 PreparedStatement pst = conn.prepareStatement(sql);
                                 pst.setString(1, prjName);
                                 pst.setInt(2, numOfSprint);
                                 pst.setString(3, prjStatus);
                                 pst.setString(4, getBrief);
-                                pst.setString(5, getManifestoPath);
-                                pst.setInt(6, prjID);
+                                pst.setString(5, getprjDirctry);
+                                pst.setString(6, getManifestoPath);
+                                pst.setInt(7, prjID);
 
                                 pst.execute();
                                 Dialogs.create()
@@ -310,7 +342,29 @@ public class mdfProject  {
                     }
                     
                 }
-            });
+        });
+        
+        //select a folder to be project Directory
+        chooseDirtryBtn.setOnAction(
+            new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(final ActionEvent e) {
+                    Action confirm = Dialogs.create()
+                        .owner(primaryStageMdfyPrj)
+                        .title("Confirm Dialog")
+                        .masthead("Are you sure?")
+                        .message("Are you Sure you want to Change the Project Directory: All files in the Current Directory will not be Transferred to the new Directory")
+                        .showConfirm();                    
+                    if (confirm == Dialog.ACTION_YES) {
+                        DirectoryChooser directoryChooser = new DirectoryChooser();
+                        File selectedDirectory = directoryChooser.showDialog(primaryStageMdfyPrj);
+                 
+                        if(selectedDirectory != null){
+                            prjctDirtryTextField.setText(selectedDirectory.getAbsolutePath());
+                        }
+                    }
+                }
+        });
         
         cancelBtn.setOnAction(
             new EventHandler<ActionEvent>() {
@@ -318,7 +372,7 @@ public class mdfProject  {
                 public void handle(final ActionEvent e) {
                     mainMenu.launchMainMenu(primaryStageMdfyPrj, userID);                   
                 }
-            });
+        });
         
         addBtn.setOnAction(
             new EventHandler<ActionEvent>() {
@@ -626,7 +680,6 @@ public class mdfProject  {
             }
             rs.close();
             
-            //usrIdOfThsPrj.co
             //now get the users that are not in the usrIdOfThsPrj list
             ResultSet rs2=st.executeQuery("select * from login where Account_Status = 'Active'");
             while(rs2.next()){

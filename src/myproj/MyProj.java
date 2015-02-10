@@ -26,7 +26,7 @@ public class MyProj extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         //burnDown.launchBurnDown(primaryStage);
-        chooseSprint.launchGUISprint(primaryStage);
+        chooseSprint.launchGUISprint(primaryStage, 32);
         //String hello = hashing.getMD5("password");
         //String[] args;
         //MD5.main(args);

@@ -47,21 +47,5 @@ public class diffInDate {
     return formatter.parse(dateString);
   }
 
-//  public static void main(String argv[]) throws Exception {
-//    Calendar cc1 = Calendar.getInstance();
-//    Calendar cc2 = Calendar.getInstance();
-//    cc1.add(Calendar.DAY_OF_MONTH, 10);
-//
-//    DateDiff(cc1.getTime(), cc2.getTime());
-//
-//    java.util.Date d1 = makeDate("10/10/2000");
-//    java.util.Date d2 = makeDate("10/18/2000");
-//    DateDiff(d1, d2);
-//
-//    java.util.Date d3 = makeDate("1/1/2000");
-//    java.util.Date d4 = makeDate("12/31/2000");
-//    int diff34 = diff(d3, d4);
-//    System.out.println("diff34=" + diff34);
-//  }
 
 }

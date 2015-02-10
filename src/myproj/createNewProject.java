@@ -38,9 +38,11 @@ import javafx.scene.control.TextAreaBuilder;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javax.swing.JOptionPane;
@@ -141,18 +143,51 @@ public class createNewProject {
         briefScrollPane.setPrefWidth(10);
         briefScrollPane.setPrefHeight(120);
         grid.add(briefScrollPane,1, 8);
+        Label briefInputCount = new Label("Max Input: 0/3000");
+        briefInputCount.setAlignment(Pos.TOP_LEFT);
+        grid.add(briefInputCount, 2, 8);
+        
+        //a listener for the projectBrief text area
+        briefTextArea.setOnKeyTyped((javafx.scene.input.KeyEvent ke) -> {
+            int briefLength = briefTextArea.getLength() + 1;
+            //change the input according to the input length
+            briefInputCount.setText("Max Input: " + briefLength + "/3000");
+            
+            //if length greater than 3000 char then change color of label to RED
+            if(briefLength > 3000){
+                briefInputCount.setTextFill(Color.rgb(255, 0, 0));
+                
+            }else{
+                briefInputCount.setTextFill(Color.rgb(0, 0, 0));
+            }
+                
+        });
+        
+        Label prjctDirtry = new Label("Project Directory:");
+        grid.add(prjctDirtry, 0, 9);
+        TextField prjctDirtryTextField = new TextField();
+        prjctDirtryTextField.setEditable(false);
+        grid.add(prjctDirtryTextField, 1, 9);
+        
+        
+        Button chooseDirtryBtn = new Button("    Select Directory   ");
+        HBox hbChooseDirtryBtn = new HBox(10);
+        hbChooseDirtryBtn.setAlignment(Pos.BOTTOM_LEFT);
+        hbChooseDirtryBtn.getChildren().add(chooseDirtryBtn);
+        grid.add(hbChooseDirtryBtn, 2, 9); 
         
         Label prjctManifesto = new Label("Project Manifesto:");
-        grid.add(prjctManifesto, 0, 9);
+        grid.add(prjctManifesto, 0, 10);
         TextField prjctManifestoTextField = new TextField();
-        grid.add(prjctManifestoTextField, 1, 9);
+        prjctManifestoTextField.setEditable(false);
+        grid.add(prjctManifestoTextField, 1, 10);
         
         
-        Button chooseBtn = new Button("Select Manifesto");
+        Button chooseBtn = new Button("   Select Manifesto   ");
         HBox hbChooseBtn = new HBox(10);
-        hbChooseBtn.setAlignment(Pos.BOTTOM_RIGHT);
+        hbChooseBtn.setAlignment(Pos.BOTTOM_LEFT);
         hbChooseBtn.getChildren().add(chooseBtn);
-        grid.add(hbChooseBtn, 1, 10);  
+        grid.add(hbChooseBtn, 2, 10);  
         
         Button createBtn = new Button("Create");
         HBox hbCreateBtn = new HBox(10);
@@ -173,14 +208,25 @@ public class createNewProject {
                 public void handle(final ActionEvent e) {
                     FileChooser fileChooser = new FileChooser();
                     File file = fileChooser.showOpenDialog(primaryStageCreateProject);
-                    //Set extension filter
-//                    FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("AVI files (*.avi)");
-//                    fileChooser.getExtensionFilters().add(extFilter);
                     if(file != null)
                     {
                         prjctManifestoTextField.setText(file.getPath());
                     }
                     
+                }
+            });
+        
+        //select a folder to be project Directory
+        chooseDirtryBtn.setOnAction(
+            new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(final ActionEvent e) {
+                    DirectoryChooser directoryChooser = new DirectoryChooser();
+                    File selectedDirectory = directoryChooser.showDialog(primaryStageCreateProject);
+                 
+                    if(selectedDirectory != null){
+                        prjctDirtryTextField.setText(selectedDirectory.getAbsolutePath());
+                    }       
                 }
             });
         
@@ -237,12 +283,13 @@ public class createNewProject {
                     //getting other values from field
                     String numOfSprintChoice = prjSprintOptions.get(prjNumSprintCboBox.getSelectionModel().getSelectedIndex());
                     String getBrief = briefTextArea.getText();
+                    String getPrjDirtry = prjctDirtryTextField.getText();
                     String getManifestoPath = prjctManifestoTextField.getText();
                     //Getting current Date
                     java.util.Calendar cal = java.util.Calendar.getInstance();
                     java.util.Date utilDate = cal.getTime();
                     java.sql.Date sqlCurrentDate = new java.sql.Date(utilDate.getTime());
-                    if(!getprjName.equals("") && !observableList.isEmpty() && getBrief.length()<=3000 && prjNumSprintCboBox.getSelectionModel().getSelectedIndex() >= 0){
+                    if(!getPrjDirtry.equals("") && !getprjName.equals("") && !observableList.isEmpty() && getBrief.length()<=3000 && prjNumSprintCboBox.getSelectionModel().getSelectedIndex() >= 0){
 
                         if(numOfSprintChoice.equals("Other..") && !prjNumSprintsTextField.getText().matches("[0-9]+")){
                             Dialogs.create()
@@ -278,15 +325,16 @@ public class createNewProject {
                                         .message("Sorry the Project Name is already taken, Please use another")
                                         .showError();
                                 }else{
-                                    String sql = "Insert into project (Project_Name, PrjOwnrUser_ID, Project_Num_Sprints, Project_Status, Project_Brief, Project_Manifesto, Project_Created) values (?, ?, ?, ?, ?, ?, ?) ";
+                                    String sql = "Insert into project (Project_Name, PrjOwnrUser_ID, Project_Num_Sprints, Project_Status, Project_Brief, Project_Directory, Project_Manifesto, Project_Created) values (?, ?, ?, ?, ?, ?, ?) ";
                                     PreparedStatement pst = conn.prepareStatement(sql);
                                     pst.setString(1, getprjName);//adding the project name
                                     pst.setInt(2, passdUsrID);//adding the owner name,  by default it is the one who created
                                     pst.setInt(3, numOfSprint);//adding the deadline date
                                     pst.setString(4, "Incomplete");// adding the project status, by default it is incomplete
                                     pst.setString(5, getBrief);//adding the project brief
-                                    pst.setString(6, getManifestoPath);//adding the path for manifesto
-                                    pst.setDate(7, sqlCurrentDate);//adding vurrent date 
+                                    pst.setString(6, getPrjDirtry);//adding the prj directory
+                                    pst.setString(7, getManifestoPath);//adding the path for manifesto
+                                    pst.setDate(8, sqlCurrentDate);//adding vurrent date 
                                     //execute 
                                     pst.execute();  
                                     pst.close();

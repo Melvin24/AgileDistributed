@@ -45,11 +45,11 @@ import org.controlsfx.dialog.Dialogs;
  */
 public class chooseSprint {
     private static final Connection conn = mySQL.ConnectDb();
-    public static void launchGUISprint (Stage input) { 
-        startSprint(input);
+    public static void launchGUISprint (Stage input, int prjID) { 
+        startSprint(input, prjID);
     }
     
-    public static void startSprint(Stage primaryStageSprint) {
+    public static void startSprint(Stage primaryStageSprint, int prjID) {
         primaryStageSprint.setTitle("Choose Sprint");
         Group root = new Group();
         Scene scene = new Scene(root, 550, 500);
@@ -85,7 +85,7 @@ public class chooseSprint {
         try{
             Statement st=conn.createStatement();
             //sql to get user id from the user info table but only get the once that have confirmed to a project
-            ResultSet rs = st.executeQuery("select * from Sprints");
+            ResultSet rs = st.executeQuery("select * from Sprints where Project_ID = '"+prjID+"'");
             //an arraylist to store all projectid's that this user is involved in  
             while(rs.next())
             {
@@ -197,11 +197,10 @@ public class chooseSprint {
         MenuBar menuBar = new MenuBar();
         Menu menuPhase = new Menu("Tools");        
         
-        MenuItem menuItemA = new MenuItem("Register");
+        MenuItem menuItemA = new MenuItem("Log-Out");
         menuItemA.setOnAction(new EventHandler<ActionEvent>() {
         @Override public void handle(ActionEvent e) {
-            //System.out.println("Item A Clicked");
-            register.launchRgst(primaryStageSprint);
+                login.launchGUI(primaryStageSprint);          
         }
         });
         

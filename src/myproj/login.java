@@ -1,6 +1,7 @@
 
 package myproj;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -44,13 +45,15 @@ public class login  {
     public static void startLogin(Stage primaryStage) {
         primaryStage.setTitle("Login");
         Group root = new Group();
+        
         Scene scene = new Scene(root, 550, 500);
+        
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
         grid.setVgap(10);
-        grid.setPadding(new Insets(150, 150, 150, 150));
-
+        grid.setPadding(new Insets(150, 250, 250, 150));
+        grid.setId("grid");
         
         
         Text scenetitle = new Text("Welcome");
@@ -160,8 +163,14 @@ public class login  {
 
         root.getChildren().add(menuBar);
            
+        scene.getStylesheets().add
+ (login.class.getResource("Login.css").toExternalForm());
+        
         primaryStage.setScene(scene);
         
+//        scene.getStylesheets().add
+// (login.class.getResource("Login.css").toExternalForm());
+//        
         primaryStage.setResizable(false);
         primaryStage.show();
     }
