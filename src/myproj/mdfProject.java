@@ -67,7 +67,7 @@ public class mdfProject  {
     public static void startModify(Stage primaryStageMdfyPrj, int prjID, int userID) {
         primaryStageMdfyPrj.setTitle("Modify Project");
         Group root = new Group();
-        Scene scene = new Scene(root, 550, 600);
+        Scene scene = new Scene(root, 550, 550);
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
@@ -87,38 +87,17 @@ public class mdfProject  {
         TextField prjctNameTextField = new TextField();
         grid.add(prjctNameTextField, 1, 3); 
         
-
-        
-        Label prjNumSprints = new Label("Number of Sprints:");
-        grid.add(prjNumSprints, 0, 4);       
-        ObservableList<String> prjSprintOptions = FXCollections.observableArrayList(
-        "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Other..");
-        ComboBox prjNumSprintCboBox = new ComboBox(prjSprintOptions);
-        grid.add(prjNumSprintCboBox, 1, 4);
-        TextField prjNumSprintsTextField = new TextField();
-        prjNumSprintsTextField.setVisible(false);
-        grid.add(prjNumSprintsTextField, 2, 4); 
-        
-        prjNumSprintCboBox.valueProperty().addListener(new ChangeListener<String>() {
-            @Override public void changed(ObservableValue ov, String t, String t1) {                
-                if(t1.equals("Other..")){
-                    prjNumSprintsTextField.setVisible(true); 
-                }else{
-                    prjNumSprintsTextField.setVisible(false); 
-                }
-            }    
-        });
         
         Label prjctStatus = new Label("Project Status:");
-        grid.add(prjctStatus,0, 5);
+        grid.add(prjctStatus,0, 4);
         ObservableList<String> prjStatusOptions = FXCollections.observableArrayList(
             "Incomplete",
             "Complete"  );
         ComboBox statusCboBox = new ComboBox(prjStatusOptions);
-        grid.add(statusCboBox, 1, 5); 
+        grid.add(statusCboBox, 1, 4); 
         
         Label prjBrief = new Label("Brief:");
-        grid.add(prjBrief, 0, 6);
+        grid.add(prjBrief, 0, 5);
         TextArea briefTextArea = TextAreaBuilder.create()
                 .prefWidth(10)
                 .wrapText(true)
@@ -128,10 +107,10 @@ public class mdfProject  {
         briefScrollPane.setFitToWidth(true);
         briefScrollPane.setPrefWidth(10);
         briefScrollPane.setPrefHeight(100);
-        grid.add(briefScrollPane,1, 6);
+        grid.add(briefScrollPane,1, 5);
         Label briefInputCount = new Label("Max Input: 0/3000");
         briefInputCount.setAlignment(Pos.TOP_LEFT);
-        grid.add(briefInputCount, 2, 6);
+        grid.add(briefInputCount, 2, 5);
         
         //a listener for the projectBrief text area
         briefTextArea.setOnKeyTyped((javafx.scene.input.KeyEvent ke) -> {
@@ -150,83 +129,83 @@ public class mdfProject  {
         });
         
         Label prjctDirtry = new Label("Project Directory:");
-        grid.add(prjctDirtry, 0, 7);
+        grid.add(prjctDirtry, 0, 6);
         TextField prjctDirtryTextField = new TextField();
         prjctDirtryTextField.setEditable(false);
-        grid.add(prjctDirtryTextField, 1, 7);
+        grid.add(prjctDirtryTextField, 1, 6);
         
         
         Button chooseDirtryBtn = new Button("     Select Directory    ");
         HBox hbChooseDirtryBtn = new HBox(10);
         hbChooseDirtryBtn.setAlignment(Pos.BOTTOM_LEFT);
         hbChooseDirtryBtn.getChildren().add(chooseDirtryBtn);
-        grid.add(hbChooseDirtryBtn, 2, 7); 
+        grid.add(hbChooseDirtryBtn, 2, 6); 
         
         Label prjctManifesto = new Label("Project Manifesto:");
-        grid.add(prjctManifesto, 0, 8);
+        grid.add(prjctManifesto, 0, 7);
         TextField prjctManifestoTextField = new TextField();
         prjctManifestoTextField.setEditable(false);
-        grid.add(prjctManifestoTextField, 1, 8);
+        grid.add(prjctManifestoTextField, 1, 7);
                 
         Button chooseBtn = new Button("    Select Manifesto    ");
         HBox hbChooseBtn = new HBox(10);
         hbChooseBtn.setAlignment(Pos.BOTTOM_LEFT);
         hbChooseBtn.getChildren().add(chooseBtn);
-        grid.add(hbChooseBtn, 2, 8); 
+        grid.add(hbChooseBtn, 2, 7); 
         
         Button mdfyBtn = new Button("        Modify        ");
         HBox hbBtn = new HBox(10);
         hbBtn.setAlignment(Pos.BOTTOM_CENTER);
         hbBtn.getChildren().add(mdfyBtn);
-        grid.add(hbBtn, 1, 9);
+        grid.add(hbBtn, 1, 8);
         
         Text subtitle = new Text("Modify Team");
         subtitle.setFont(Font.font("Tahoma", FontWeight.BOLD, 15));
-        grid.add(subtitle, 0, 10);
+        grid.add(subtitle, 0, 9);
         
         Label prjctOwnr = new Label("Project Owner:");
-        grid.add(prjctOwnr,0, 11);
+        grid.add(prjctOwnr,0, 10);
         TextField prjctOwnrTextField = new TextField();
         prjctOwnrTextField.setEditable(false);
-        grid.add(prjctOwnrTextField, 1, 11); 
+        grid.add(prjctOwnrTextField, 1, 10); 
         
         //button to change project owner
         Button changeBtn = new Button("     Change Owner     ");
         HBox hbChangeBtn = new HBox(10);
         hbChangeBtn.setAlignment(Pos.BOTTOM_LEFT);
         hbChangeBtn.getChildren().add(changeBtn);
-        grid.add(hbChangeBtn, 2, 11);
+        grid.add(hbChangeBtn, 2, 10);
         
         Label prjTemLeadrs = new Label("Team Leaders:");
-        grid.add(prjTemLeadrs, 0, 12);
+        grid.add(prjTemLeadrs, 0, 11);
         
         ListView<String> listView = new ListView<String>(observableList);
         listView.setPrefSize(10, 70); 
-        grid.add(listView,1,12);      
+        grid.add(listView,1,11);      
 
         Button addBtn = new Button("   Add Team Leader   ");
         HBox hbAddBtn = new HBox(10);
         hbAddBtn.setAlignment(Pos.BOTTOM_LEFT);
         hbAddBtn.getChildren().add(addBtn);
-        grid.add(hbAddBtn, 2, 12); 
+        grid.add(hbAddBtn, 2, 11); 
         
         Button rmvBtn = new Button("Remove Team Leader");
         HBox hbDeleteBtn = new HBox(10);
         hbDeleteBtn.setAlignment(Pos.BOTTOM_LEFT);
         hbDeleteBtn.getChildren().add(rmvBtn);
-        grid.add(hbDeleteBtn, 2, 13); 
+        grid.add(hbDeleteBtn, 2, 12); 
         
         Button cancelBtn = new Button("Go Back");
         HBox hbCancelBtn = new HBox(10);
         hbCancelBtn.setAlignment(Pos.BOTTOM_RIGHT);
         hbCancelBtn.getChildren().add(cancelBtn);
-        grid.add(hbCancelBtn, 0, 14); 
+        grid.add(hbCancelBtn, 0, 13); 
         
         Button saveBtn = new Button("Save Changes");
         HBox hbSaveBtn = new HBox(10);
         hbSaveBtn.setAlignment(Pos.BOTTOM_CENTER);
         hbSaveBtn.getChildren().add(saveBtn);
-        grid.add(hbSaveBtn, 1, 14); 
+        grid.add(hbSaveBtn, 1, 13); 
         //Populating required fields
         try{
             Statement st=conn.createStatement();
@@ -236,7 +215,6 @@ public class mdfProject  {
                 prjctNameTextField.setText(rs.getString("Project_Name"));
                 prjctOwnrTextField.setText(getName(rs.getInt("PrjOwnrUser_ID")));
                 statusCboBox.setValue(rs.getString("Project_Status"));
-                prjNumSprintCboBox.setValue(rs.getString("Project_Num_Sprints"));
                 briefTextArea.setText(rs.getString("Project_Brief"));
                 briefInputCount.setText("Max Input: " + briefTextArea.getLength() + "/3000");
                 prjctDirtryTextField.setText(rs.getString("Project_Directory"));
@@ -264,7 +242,6 @@ public class mdfProject  {
                 @Override
                 public void handle(final ActionEvent e) {
                     String prjName = prjctNameTextField.getText();
-                    String numOfSprintChoice = prjSprintOptions.get(prjNumSprintCboBox.getSelectionModel().getSelectedIndex());
                     String prjStatus = prjStatusOptions.get(statusCboBox.getSelectionModel().getSelectedIndex());
                     //System.out.println(prjStatusOptions.get(statusCboBox.getSelectionModel().getSelectedIndex()));
                     String getBrief = briefTextArea.getText();
@@ -282,29 +259,16 @@ public class mdfProject  {
                                 .masthead("Oops there was an Error!")
                                 .message("Sorry the Project Name is already taken, Please use another")
                                 .showError();
-                            }else if(numOfSprintChoice.equals("Other..") && !prjNumSprintsTextField.getText().matches("[0-9]+")){
-                                Dialogs.create()
-                                    .owner(primaryStageMdfyPrj)
-                                    .title("Error")
-                                    .masthead("Oops there was an Error!")
-                                    .message("Sorry Please specify the Appropriate Number of Sprints")
-                                    .showError();
                             }else{
-                                int numOfSprint = 0;
-                                if(numOfSprintChoice.equals("Other..")){
-                                    numOfSprint = Integer.parseInt(prjNumSprintsTextField.getText());
-                                }else{
-                                    numOfSprint = Integer.parseInt(numOfSprintChoice);
-                                }
-                                String sql = "update project set Project_Name = ?, Project_Num_Sprints =?, Project_Status = ?, Project_Brief = ?, Project_Directory = ?, Project_Manifesto =? where Project_ID = ?";
+                                
+                                String sql = "update project set Project_Name = ?, Project_Status = ?, Project_Brief = ?, Project_Directory = ?, Project_Manifesto =? where Project_ID = ?";
                                 PreparedStatement pst = conn.prepareStatement(sql);
                                 pst.setString(1, prjName);
-                                pst.setInt(2, numOfSprint);
-                                pst.setString(3, prjStatus);
-                                pst.setString(4, getBrief);
-                                pst.setString(5, getprjDirctry);
-                                pst.setString(6, getManifestoPath);
-                                pst.setInt(7, prjID);
+                                pst.setString(2, prjStatus);
+                                pst.setString(3, getBrief);
+                                pst.setString(4, getprjDirctry);
+                                pst.setString(5, getManifestoPath);
+                                pst.setInt(6, prjID);
 
                                 pst.execute();
                                 Dialogs.create()

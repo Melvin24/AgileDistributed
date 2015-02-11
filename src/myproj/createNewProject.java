@@ -68,7 +68,7 @@ public class createNewProject {
     private static void startCreateProject(Stage primaryStageCreateProject, int passdUsrID) {
         primaryStageCreateProject.setTitle("Create Project");
         Group root = new Group();
-        Scene scene = new Scene(root, 550, 500);
+        Scene scene = new Scene(root, 550, 550);
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
@@ -111,28 +111,29 @@ public class createNewProject {
         grid.add(hbRemoveBtn, 2, 6);
         
         
-        Label prjNumSprints = new Label("Number of Sprints:");
-        grid.add(prjNumSprints, 0, 7);       
+        Label prjSprintsDuration = new Label("Sprint Duration (Days):");
+        grid.add(prjSprintsDuration, 0, 7);       
         ObservableList<String> prjSprintOptions = FXCollections.observableArrayList(
         "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Other..");
-        ComboBox prjNumSprintCboBox = new ComboBox(prjSprintOptions);
-        grid.add(prjNumSprintCboBox, 1, 7);
-        TextField prjNumSprintsTextField = new TextField();
-        prjNumSprintsTextField.setVisible(false);
-        grid.add(prjNumSprintsTextField, 2, 7); 
+        ComboBox prjSprintDurationCboBox = new ComboBox(prjSprintOptions);
+        grid.add(prjSprintDurationCboBox, 1, 7);
+        TextField prjSprintsDurationTextField = new TextField();
+        prjSprintsDurationTextField.setPromptText("Enter Duration in Days...");
+        prjSprintsDurationTextField.setVisible(false);
+        grid.add(prjSprintsDurationTextField, 1, 8); 
         
-        prjNumSprintCboBox.valueProperty().addListener(new ChangeListener<String>() {
+        prjSprintDurationCboBox.valueProperty().addListener(new ChangeListener<String>() {
             @Override public void changed(ObservableValue ov, String t, String t1) {                
                 if(t1.equals("Other..")){
-                    prjNumSprintsTextField.setVisible(true); 
+                    prjSprintsDurationTextField.setVisible(true); 
                 }else{
-                    prjNumSprintsTextField.setVisible(false); 
+                    prjSprintsDurationTextField.setVisible(false); 
                 }
             }    
         });
        
         Label prjBrief = new Label("Brief:");
-        grid.add(prjBrief, 0, 8);
+        grid.add(prjBrief, 0, 9);
         TextArea briefTextArea = TextAreaBuilder.create()
                 .prefWidth(10)
                 .wrapText(true)
@@ -142,10 +143,10 @@ public class createNewProject {
         briefScrollPane.setFitToWidth(true);
         briefScrollPane.setPrefWidth(10);
         briefScrollPane.setPrefHeight(120);
-        grid.add(briefScrollPane,1, 8);
+        grid.add(briefScrollPane,1, 9);
         Label briefInputCount = new Label("Max Input: 0/3000");
         briefInputCount.setAlignment(Pos.TOP_LEFT);
-        grid.add(briefInputCount, 2, 8);
+        grid.add(briefInputCount, 2, 9);
         
         //a listener for the projectBrief text area
         briefTextArea.setOnKeyTyped((javafx.scene.input.KeyEvent ke) -> {
@@ -164,42 +165,42 @@ public class createNewProject {
         });
         
         Label prjctDirtry = new Label("Project Directory:");
-        grid.add(prjctDirtry, 0, 9);
+        grid.add(prjctDirtry, 0, 10);
         TextField prjctDirtryTextField = new TextField();
         prjctDirtryTextField.setEditable(false);
-        grid.add(prjctDirtryTextField, 1, 9);
+        grid.add(prjctDirtryTextField, 1, 10);
         
         
         Button chooseDirtryBtn = new Button("    Select Directory   ");
         HBox hbChooseDirtryBtn = new HBox(10);
         hbChooseDirtryBtn.setAlignment(Pos.BOTTOM_LEFT);
         hbChooseDirtryBtn.getChildren().add(chooseDirtryBtn);
-        grid.add(hbChooseDirtryBtn, 2, 9); 
+        grid.add(hbChooseDirtryBtn, 2, 10); 
         
         Label prjctManifesto = new Label("Project Manifesto:");
-        grid.add(prjctManifesto, 0, 10);
+        grid.add(prjctManifesto, 0, 11);
         TextField prjctManifestoTextField = new TextField();
         prjctManifestoTextField.setEditable(false);
-        grid.add(prjctManifestoTextField, 1, 10);
+        grid.add(prjctManifestoTextField, 1, 11);
         
         
         Button chooseBtn = new Button("   Select Manifesto   ");
-        HBox hbChooseBtn = new HBox(10);
+        HBox hbChooseBtn = new HBox(11);
         hbChooseBtn.setAlignment(Pos.BOTTOM_LEFT);
         hbChooseBtn.getChildren().add(chooseBtn);
-        grid.add(hbChooseBtn, 2, 10);  
+        grid.add(hbChooseBtn, 2, 11);  
         
         Button createBtn = new Button("Create");
         HBox hbCreateBtn = new HBox(10);
         hbCreateBtn.setAlignment(Pos.BOTTOM_RIGHT);
         hbCreateBtn.getChildren().add(createBtn);
-        grid.add(hbCreateBtn, 1, 11);   
+        grid.add(hbCreateBtn, 1, 12);   
         
         Button cancelBtn = new Button("Cancel");
         HBox hbCancelBtn = new HBox(10);
         hbCancelBtn.setAlignment(Pos.BOTTOM_LEFT);
         hbCancelBtn.getChildren().add(cancelBtn);
-        grid.add(hbCancelBtn, 0, 11);
+        grid.add(hbCancelBtn, 0, 12);
         
         //select manifesto button actionlistener
         chooseBtn.setOnAction(
@@ -281,7 +282,7 @@ public class createNewProject {
                 public void handle(final ActionEvent e) {
                     String getprjName = prjctNameTextField.getText();
                     //getting other values from field
-                    String numOfSprintChoice = prjSprintOptions.get(prjNumSprintCboBox.getSelectionModel().getSelectedIndex());
+                    String numOfSprintDuration = prjSprintOptions.get(prjSprintDurationCboBox.getSelectionModel().getSelectedIndex());
                     String getBrief = briefTextArea.getText();
                     String getPrjDirtry = prjctDirtryTextField.getText();
                     String getManifestoPath = prjctManifestoTextField.getText();
@@ -289,21 +290,21 @@ public class createNewProject {
                     java.util.Calendar cal = java.util.Calendar.getInstance();
                     java.util.Date utilDate = cal.getTime();
                     java.sql.Date sqlCurrentDate = new java.sql.Date(utilDate.getTime());
-                    if(!getPrjDirtry.equals("") && !getprjName.equals("") && !observableList.isEmpty() && getBrief.length()<=3000 && prjNumSprintCboBox.getSelectionModel().getSelectedIndex() >= 0){
+                    if(!getPrjDirtry.equals("") && !getprjName.equals("") && !observableList.isEmpty() && getBrief.length()<=3000 && prjSprintDurationCboBox.getSelectionModel().getSelectedIndex() >= 0){
 
-                        if(numOfSprintChoice.equals("Other..") && !prjNumSprintsTextField.getText().matches("[0-9]+")){
+                        if(numOfSprintDuration.equals("Other..") && !prjSprintsDurationTextField.getText().matches("[0-9]+")){
                             Dialogs.create()
                                 .owner(primaryStageCreateProject)
                                 .title("Error")
                                 .masthead("Oops there was an Error!")
-                                .message("Sorry Please specify the Appropriate Number of Sprints")
+                                .message("Sorry Please specify the Appropriate Sprint Duration")
                                 .showError();
                         }else{
-                            int numOfSprint = 0;
-                            if(numOfSprintChoice.equals("Other..")){
-                                numOfSprint = Integer.parseInt(prjNumSprintsTextField.getText());
+                            int numOfDurationSprint = 0;
+                            if(numOfSprintDuration.equals("Other..")){
+                                numOfDurationSprint = Integer.parseInt(prjSprintsDurationTextField.getText());
                             }else{
-                                numOfSprint = Integer.parseInt(numOfSprintChoice);
+                                numOfDurationSprint = Integer.parseInt(numOfSprintDuration);
                             }
                             String allTemLdr = usrFullName + ",";
                             //converting observablelist to array for future iteration
@@ -325,11 +326,11 @@ public class createNewProject {
                                         .message("Sorry the Project Name is already taken, Please use another")
                                         .showError();
                                 }else{
-                                    String sql = "Insert into project (Project_Name, PrjOwnrUser_ID, Project_Num_Sprints, Project_Status, Project_Brief, Project_Directory, Project_Manifesto, Project_Created) values (?, ?, ?, ?, ?, ?, ?) ";
+                                    String sql = "Insert into project (Project_Name, PrjOwnrUser_ID, Project_Sprint_Duration, Project_Status, Project_Brief, Project_Directory, Project_Manifesto, Project_Created) values (?, ?, ?, ?, ?, ?, ?) ";
                                     PreparedStatement pst = conn.prepareStatement(sql);
                                     pst.setString(1, getprjName);//adding the project name
                                     pst.setInt(2, passdUsrID);//adding the owner name,  by default it is the one who created
-                                    pst.setInt(3, numOfSprint);//adding the deadline date
+                                    pst.setInt(3, numOfDurationSprint);//adding the Sprint Duration
                                     pst.setString(4, "Incomplete");// adding the project status, by default it is incomplete
                                     pst.setString(5, getBrief);//adding the project brief
                                     pst.setString(6, getPrjDirtry);//adding the prj directory
