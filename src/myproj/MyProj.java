@@ -26,7 +26,7 @@ public class MyProj extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         //burnDown.launchBurnDown(primaryStage);
-        chooseSprint.launchGUISprint(primaryStage, 32);
+        //chooseSprint.launchGUISprint(primaryStage, 32);
         //String hello = hashing.getMD5("password");
         //String[] args;
         //MD5.main(args);
@@ -40,7 +40,7 @@ public class MyProj extends Application {
         //createTeam.launchacceptInvite(primaryStage, 8, 31);
         //mdfProject.launchMdfPrj(primaryStage, 32, 13);
         //mdfTeam.launchMdfTem(primaryStage, 31, 8, 4);
-        //createNewProject.launchCreateProject(primaryStage, 15);
+        createNewProject.launchCreateProject(primaryStage, 15);
 //        int userPass = hashing.hashIt("admin");
 //        System.out.println(userPass);
 //        String userPass2 = hashing.retrieveIt(userPass);

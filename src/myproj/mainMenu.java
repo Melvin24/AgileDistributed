@@ -70,7 +70,7 @@ public class mainMenu  {
         //adding a listview
         ObservableList<String> observableList = FXCollections.observableArrayList();
         ObservableList<String> observableListOwner = FXCollections.observableArrayList();
-        ObservableList<String> observableListNumOfSprints = FXCollections.observableArrayList();
+        ObservableList<String> observableListSprintsDuration = FXCollections.observableArrayList();
         ObservableList<String> observableListStatus = FXCollections.observableArrayList();
         ObservableList<String> observableListYurRole = FXCollections.observableArrayList();
         ObservableList<String> observableListBrief = FXCollections.observableArrayList();
@@ -114,7 +114,7 @@ public class mainMenu  {
                             alPrjOwnrUsrID.add(s);
                             //System.out.println(s);
                         }
-                        observableListNumOfSprints.add(rs3.getString("Project_Num_Sprints"));
+                        observableListSprintsDuration.add(rs3.getString("Project_Sprint_Duration"));
                         observableListStatus.add(rs3.getString("Project_Status"));
                         observableListBrief.add(rs3.getString("Project_Brief"));
                         observableListCreated.add(rs3.getString("Project_Created"));
@@ -166,7 +166,7 @@ public class mainMenu  {
         grid.add(prjctCreatedTextField, 6, 6);
         
         
-        Label prjctSprint = new Label("Number Of Sprint:");
+        Label prjctSprint = new Label("Sprint Duration:");
         grid.add(prjctSprint, 5, 7);
         TextField prjctSprintTextField = new TextField();
         prjctSprintTextField.setEditable(false);
@@ -402,7 +402,7 @@ public class mainMenu  {
         menu3ItemD.setOnAction(new EventHandler<ActionEvent>() {
         @Override public void handle(ActionEvent e) {
             int prjID = alPrjID.get(listView.getSelectionModel().getSelectedIndex());
-            chooseSprint.launchGUISprint(primaryStageMainMenu, prjID);
+            chooseSprint.launchGUISprint(primaryStageMainMenu, prjID, userID);
         }
         });
         
@@ -431,7 +431,7 @@ public class mainMenu  {
                     openBtn.setDisable(false);
                     
                     prjctNameTextField.setText(new_val);
-                    prjctSprintTextField.setText(observableListNumOfSprints.get(observableList.indexOf(new_val)));
+                    prjctSprintTextField.setText(observableListSprintsDuration.get(observableList.indexOf(new_val)));
                     prjctStatusTextField.setText(observableListStatus.get(observableList.indexOf(new_val)));
                     briefTextArea.setText(observableListBrief.get(observableList.indexOf(new_val)));
                     prjctOwnrTextField.setText(observableListOwner.get(observableList.indexOf(new_val))); 

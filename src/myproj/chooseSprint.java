@@ -45,11 +45,11 @@ import org.controlsfx.dialog.Dialogs;
  */
 public class chooseSprint {
     private static final Connection conn = mySQL.ConnectDb();
-    public static void launchGUISprint (Stage input, int prjID) { 
-        startSprint(input, prjID);
+    public static void launchGUISprint (Stage input, int prjID, int userID) { 
+        startSprint(input, prjID, userID);
     }
     
-    public static void startSprint(Stage primaryStageSprint, int prjID) {
+    public static void startSprint(Stage primaryStageSprint, int prjID, int userID) {
         primaryStageSprint.setTitle("Choose Sprint");
         Group root = new Group();
         Scene scene = new Scene(root, 550, 500);
@@ -76,11 +76,23 @@ public class chooseSprint {
         listView.setPrefSize(200, 400); 
         grid.add(listView,1, 4,1, 7);
         
-        Button btn = new Button("View Burndown Chart");
+        Button btn = new Button("View Sprint Burndown ");
         HBox hbBtn = new HBox(10);
         hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
         hbBtn.getChildren().add(btn);
         grid.add(hbBtn, 2, 4);
+        
+        Button prjBurnDownBtn = new Button("View Project Burndown");
+        HBox prjBurnDownhbBtn = new HBox(10);
+        prjBurnDownhbBtn.setAlignment(Pos.BOTTOM_RIGHT);
+        prjBurnDownhbBtn.getChildren().add(prjBurnDownBtn);
+        grid.add(prjBurnDownhbBtn, 2, 5);
+        
+        Button goBackBtn = new Button("            Go Back             ");
+        HBox goBackhbBtn = new HBox(10);
+        goBackhbBtn.setAlignment(Pos.BOTTOM_RIGHT);
+        goBackhbBtn.getChildren().add(goBackBtn);
+        grid.add(goBackhbBtn, 2, 6);
         
         try{
             Statement st=conn.createStatement();
@@ -91,11 +103,10 @@ public class chooseSprint {
             {
                 observableList.add(rs.getString("Sprint_Name"));
                 observableListSprintID.add(rs.getInt("Sprint_ID"));
-                observableListSprtStrtDate.add(rs.getDate("Sprint_StartDate")); 
-                observableListSprtDuration.add(rs.getInt("Sprint_Duration"));
                 
             }
-            rs.close();           
+            rs.close(); 
+            st.close();          
         }catch(Exception e){
             Dialogs.create()
                 .owner(primaryStageSprint)
@@ -105,60 +116,53 @@ public class chooseSprint {
                 .showError();
         } 
 
-         btn.setOnAction(new EventHandler<ActionEvent>() {
+        btn.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent e) {
                 try{
-                    //obList to store Story IDs associated with sprints
-                    ObservableList<Integer> observableListStoryID = FXCollections.observableArrayList();
-                    //obList to store all the time_left for tasks that are completed
-                    ObservableList<Integer> observableListTimeLeft = FXCollections.observableArrayList();
-                    //obList to store all the date of starting for tasks that are Started
-                    ObservableList<Date> observableListDateStart = FXCollections.observableArrayList();
-                    //obList to store all the date of completing for tasks that are completed
-                    ObservableList<Date> observableListDateComplete = FXCollections.observableArrayList();
-                    //an int variable to count the total time allocated for this sprint
-                    int totalTime = 0;
-                    int totalNumOfTask = 0;
-                    String sprintTitle = observableList.get(listView.getSelectionModel().getSelectedIndex());
-                    int sprntID = observableListSprintID.get(listView.getSelectionModel().getSelectedIndex());
-                    int sprintDuration = observableListSprtDuration.get(listView.getSelectionModel().getSelectedIndex());
-                    Date startDate = observableListSprtStrtDate.get(listView.getSelectionModel().getSelectedIndex());
-                    //get the sprint id's associated with the selected story
+                    String burnDownChartTitle = observableList.get(listView.getSelectionModel().getSelectedIndex());
+                    int selectedSprintID = observableListSprintID.get(listView.getSelectionModel().getSelectedIndex());
+                    int sumOfStoryPoints = 0;
+                    int sumOfStoryHours = 0;
+                    
+                    ObservableList<Integer> obListStoryID = FXCollections.observableArrayList();
+                    ObservableList<Integer> obListStoryPoint = FXCollections.observableArrayList();
+                    ObservableList<Integer> obListStoryHour = FXCollections.observableArrayList();
+
+                
                     Statement st=conn.createStatement();
-                    ResultSet rs = st.executeQuery("select * from Stories where Sprint_ID = '"+sprntID+"'");
+                    ResultSet rs = st.executeQuery("select * from Stories where Sprint_ID = '"+selectedSprintID+"'");
                     while(rs.next())
                     {
-                        //only add if its not already in the OBLIST
-                        if(!observableListStoryID.contains(rs.getInt("Story_ID"))){
-                           observableListStoryID.add(rs.getInt("Story_ID")); 
-                           //System.out.println("Story IDs: " + rs.getInt("Story_ID"));
-                        }
+                        sumOfStoryPoints = sumOfStoryPoints + rs.getInt("Story_Point");
+                        sumOfStoryHours = sumOfStoryHours + rs.getInt("Story_Duration");
                         
+                        if(rs.getString("Story_Status").equals("Complete")){
+                            obListStoryID.add(rs.getInt("Story_ID"));
+                            obListStoryPoint.add(rs.getInt("Story_Point"));
+                            obListStoryHour.add(rs.getInt("Story_Duration"));
+                        }
                     }
                     rs.close();
+                    //System.out.println("jgsdsad");
                     
+                    int totalNumOfTasks = 0;
+                    ObservableList<Integer> obListTaskTimeLeft = FXCollections.observableArrayList();
+                   
                     
-                    for(int s: observableListStoryID){
-                        ResultSet rs2 = st.executeQuery("select * from Tasks where Story_ID = '"+s+"'");
+                    for (int storyID: obListStoryID){
+                        ResultSet rs2 = st.executeQuery("select * from Tasks where Story_ID = '"+storyID+"'");
                         while(rs2.next())
                         {
-                            if(rs2.getString("Status").equals("Complete")){
-                                observableListTimeLeft.add(rs2.getInt("Time_Left"));
-                                observableListDateStart.add(rs2.getDate("Start_Date"));
-                                observableListDateComplete.add(rs2.getDate("Completed_Date"));
-                                //System.out.println("Story IDs: " + s + " Time Left: " + rs2.getInt("Time_Left") + " Completed Date: " + rs2.getDate("Completed_Date"));
-                            }
-                            totalTime = totalTime + rs2.getInt("Time_Left");
-                            totalNumOfTask = totalNumOfTask + 1;
+                            obListTaskTimeLeft.add(rs2.getInt("Time_Left"));
+                            totalNumOfTasks++;
                         }
                         rs2.close();
+                        
                     }
-                    //System.out.println("total num of task: " + totalNumOfTask);
-                    st.close();
-                    LineChart<Number, Number> createGraph = startBurnDown.createGraph(sprintTitle, observableListTimeLeft, observableListDateStart, observableListDateComplete, totalTime, sprintDuration, totalNumOfTask);
-
+                    
+                    LineChart<Number, Number> createGraph = startBurnDown.createGraph(burnDownChartTitle, sumOfStoryPoints, sumOfStoryHours, obListStoryID, obListStoryPoint, obListStoryHour, obListTaskTimeLeft, totalNumOfTasks);
                     final Stage myDialog = new Stage();
                     myDialog.initModality(Modality.WINDOW_MODAL);
                     
@@ -182,15 +186,23 @@ public class chooseSprint {
                     myDialog.show();
                 }catch(Exception ex){
                     Dialogs.create()
-                .owner(primaryStageSprint)
-                .title("Error")
-                .masthead("Oops there was an Error!")
-                .message("Sorry there was a Server Error, Please restart program or contact Admin")
-                .showError();
+                        .owner(primaryStageSprint)
+                        .title("Error")
+                        .masthead("Oops there was an Error!")
+                        .message("Sorry there was a Server Error, Please restart program or contact Admin")
+                        .showError();
                 } 
             }
         });
-            
+         
+         
+        goBackBtn.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent e) {
+                mainMenu.launchMainMenu(primaryStageSprint, userID);
+            }
+        });
         
         root.getChildren().add(grid);
         
@@ -229,9 +241,8 @@ public class chooseSprint {
            
         primaryStageSprint.setScene(scene);
         
-        //primaryStageSprint.setResizable(false);
+        primaryStageSprint.setResizable(false);
         primaryStageSprint.show();
     }
 }
-
 

@@ -20,62 +20,67 @@ public class startBurnDown {
 //        createGraph(observableListTimeLeft, observableListDateStart, observableListDateComplete, totalTime, sprintDuration, totalNumOfTask);
 //    }
     
-    public static LineChart<Number, Number> createGraph(String sprintTitle, ObservableList<Integer> observableListTimeLeft, ObservableList<Date> observableListDateStart, ObservableList<Date> observableListDateComplete, int totalTime, int sprintDuration, int totalNumOfTask){
+    public static LineChart<Number, Number> createGraph( String burnDownChartTitle, int sumOfStoryPoints, int sumOfStoryHours, ObservableList<Integer> obListStoryID, ObservableList<Integer> obListStoryPoint,  ObservableList<Integer> obListStoryHour, ObservableList<Integer> obListTaskTimeLeft, int totalNumOfTasks){
+        
+       
+        
         final NumberAxis xAxis = new NumberAxis();
         final NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("Days"); 
+        xAxis.setLabel("Hours"); 
         yAxis.setLabel("Story Points"); 
         //xAxis.set
         
         final LineChart<Number,Number> lineChart = 
                 new LineChart<Number,Number>(xAxis,yAxis);
                 
-        lineChart.setTitle(sprintTitle + " Burndown");
+        lineChart.setTitle(burnDownChartTitle + " Burndown");
         
         XYChart.Series series = new XYChart.Series();
         series.setName("Ideal Burndown");
         
-        series.getData().add(new XYChart.Data(sprintDuration, 0));
-        series.getData().add(new XYChart.Data(0, totalTime));
+        series.getData().add(new XYChart.Data(sumOfStoryHours, 0));
+        series.getData().add(new XYChart.Data(0, sumOfStoryPoints));
         
         //a new series for story points projection
         XYChart.Series series2 = new XYChart.Series();
         series2.setName("Actual Burndown  ");
-        series2.getData().add(new XYChart.Data(0, totalTime));
+        series2.getData().add(new XYChart.Data(0, sumOfStoryPoints));
         
         //a new series for num of tasks projection
         XYChart.Series series3 = new XYChart.Series();
         series3.setName("Completed Tasks");
-        series3.getData().add(new XYChart.Data(0, totalNumOfTask));
-
+        series3.getData().add(new XYChart.Data(0, totalNumOfTasks));
+        
         int count = 0;
-        int curntDiffInDate = 0;
-        int totalDays = 0;
-        int ttlStryPnt = totalTime;
-
-        //1: For each items in the observableListDateComplete calculate the number of days between startDate and the i^th dateCompleted = A
-        for(Date sqlDate: observableListDateComplete){
-            //getting the start Date from observableListDateStart and converting startDate to util date
-            java.util.Date startDate = new java.util.Date(observableListDateStart.get(count).getTime());
-
-            //converting completed date to util date
-            java.util.Date completedDate = new java.util.Date(sqlDate.getTime());
-
-            //get the differance in date
-            curntDiffInDate = diffInDate.DateDiff(startDate, completedDate);
-            //limit so that it only view up to less or equal to the sprint limit
-            if(totalDays <= sprintDuration){
-
-                totalDays = totalDays + curntDiffInDate;
-                totalNumOfTask--;
-                ttlStryPnt = ttlStryPnt - (observableListTimeLeft.get(count));         
-                series2.getData().add(new XYChart.Data(totalDays, ttlStryPnt));
+        int initialStoryPoint = sumOfStoryPoints;
+        int finalStoryPoint = 0;
+        
+        int initialStoryHours = 0;
+        int finalStoryHours = 0;
+              
                 
-                series3.getData().add(new XYChart.Data(totalDays, totalNumOfTask));  
-            }
+        
+        for(int storyID: obListStoryID){
+            finalStoryHours = obListStoryHour.get(count);
+            initialStoryHours = initialStoryHours + finalStoryHours;
+            series2.getData().add(new XYChart.Data(initialStoryHours, initialStoryPoint));
+            
+            finalStoryPoint = obListStoryPoint.get(count);
+            initialStoryPoint = initialStoryPoint - finalStoryPoint;
+            series2.getData().add(new XYChart.Data(initialStoryHours, initialStoryPoint));
+            
             count++;
         }
+        
+        int taskTimeCount = 0;
+        for (int taskTime: obListTaskTimeLeft){
+            taskTimeCount = taskTimeCount + taskTime;
+            totalNumOfTasks--;
+            series3.getData().add(new XYChart.Data(taskTimeCount, totalNumOfTasks));
             
+        }
+        
+        
         lineChart.getData().add(series);
         lineChart.getData().add(series2);
         lineChart.getData().add(series3);

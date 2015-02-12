@@ -111,14 +111,14 @@ public class createNewProject {
         grid.add(hbRemoveBtn, 2, 6);
         
         
-        Label prjSprintsDuration = new Label("Sprint Duration (Days):");
+        Label prjSprintsDuration = new Label("Sprint Duration (Hours):");
         grid.add(prjSprintsDuration, 0, 7);       
         ObservableList<String> prjSprintOptions = FXCollections.observableArrayList(
         "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Other..");
         ComboBox prjSprintDurationCboBox = new ComboBox(prjSprintOptions);
         grid.add(prjSprintDurationCboBox, 1, 7);
         TextField prjSprintsDurationTextField = new TextField();
-        prjSprintsDurationTextField.setPromptText("Enter Duration in Days...");
+        prjSprintsDurationTextField.setPromptText("Enter Duration in Hours...");
         prjSprintsDurationTextField.setVisible(false);
         grid.add(prjSprintsDurationTextField, 1, 8); 
         
