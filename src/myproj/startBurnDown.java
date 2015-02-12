@@ -20,7 +20,7 @@ public class startBurnDown {
 //        createGraph(observableListTimeLeft, observableListDateStart, observableListDateComplete, totalTime, sprintDuration, totalNumOfTask);
 //    }
     
-    public static LineChart<Number, Number> createGraph( String burnDownChartTitle, int sumOfStoryPoints, int sumOfStoryHours, ObservableList<Integer> obListStoryID, ObservableList<Integer> obListStoryPoint,  ObservableList<Integer> obListStoryHour, ObservableList<Integer> obListTaskTimeLeft, int totalNumOfTasks){
+    public static LineChart<Number, Number> createSprintBurnDown( String burnDownChartTitle, int sumOfStoryPoints, int sumOfStoryHours, ObservableList<Integer> obListStoryID, ObservableList<Integer> obListStoryPoint,  ObservableList<Integer> obListStoryHour, ObservableList<Integer> obListTaskTimeLeft, int totalNumOfTasks){
         
        
         
@@ -84,6 +84,61 @@ public class startBurnDown {
         lineChart.getData().add(series);
         lineChart.getData().add(series2);
         lineChart.getData().add(series3);
+        
+        return lineChart;
+    }
+    
+    public static LineChart<Number, Number> createPrjBurnDown(int sumOfSprintPoints, int sumOfSprintHours, ObservableList<Integer> obListCompletedSprintID, ObservableList<Integer> obListCompletedSprintPoints,  ObservableList<Integer> obListCompletedSprintHours){
+
+        final NumberAxis xAxis = new NumberAxis();
+        final NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("Hours"); 
+        yAxis.setLabel("Sprint Points"); 
+        //xAxis.set
+        
+        final LineChart<Number,Number> lineChart = 
+                new LineChart<Number,Number>(xAxis,yAxis);
+                
+        lineChart.setTitle("Project Burndown");
+        
+        XYChart.Series series = new XYChart.Series();
+        series.setName("Ideal Burndown");
+        
+        series.getData().add(new XYChart.Data(sumOfSprintHours, 0));
+        series.getData().add(new XYChart.Data(0, sumOfSprintPoints));
+        
+        //a new series for story points projection
+        XYChart.Series series2 = new XYChart.Series();
+        series2.setName("Actual Burndown  ");
+        series2.getData().add(new XYChart.Data(0, sumOfSprintPoints));
+        
+        
+        int count = 0;
+        int initialSprintPoint = sumOfSprintPoints;
+        int finalSprintPoint = 0;
+        
+        int initialSprintHours = 0;
+        int finalSprintHours = 0;
+              
+                
+        
+        for(int sprintID: obListCompletedSprintID){
+            finalSprintHours = obListCompletedSprintHours.get(count);
+            initialSprintHours = initialSprintHours + finalSprintHours;
+            series2.getData().add(new XYChart.Data(initialSprintHours, initialSprintPoint));
+            
+            finalSprintPoint = obListCompletedSprintPoints.get(count);
+            initialSprintPoint = initialSprintPoint - finalSprintPoint;
+            series2.getData().add(new XYChart.Data(initialSprintHours, initialSprintPoint));
+            
+            count++;
+        }
+
+        
+        
+        lineChart.getData().add(series);
+        lineChart.getData().add(series2);
+ 
         
         return lineChart;
     }

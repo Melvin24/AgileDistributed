@@ -45,6 +45,8 @@ import org.controlsfx.dialog.Dialogs;
  */
 public class chooseSprint {
     private static final Connection conn = mySQL.ConnectDb();
+    private static  int sumOfSprintPoints = 0;
+    private static  int sumOfSprintHours = 0;
     public static void launchGUISprint (Stage input, int prjID, int userID) { 
         startSprint(input, prjID, userID);
     }
@@ -67,9 +69,10 @@ public class chooseSprint {
         grid.add(scenetitle, 1, 3);
 
         ObservableList<String> observableList = FXCollections.observableArrayList();
-        ObservableList<Integer> observableListSprintID = FXCollections.observableArrayList();
-        ObservableList<Date> observableListSprtStrtDate = FXCollections.observableArrayList();
-        ObservableList<Integer> observableListSprtDuration = FXCollections.observableArrayList();
+        ObservableList<Integer> observableListAllSprintID = FXCollections.observableArrayList();
+        ObservableList<Integer> obListCompletedSprintID = FXCollections.observableArrayList();
+        ObservableList<Integer> obListCompletedSprintPoints = FXCollections.observableArrayList();
+        ObservableList<Integer> obListCompletedSprintHours = FXCollections.observableArrayList();
 
         
         ListView<String> listView = new ListView<String>(observableList);
@@ -94,6 +97,8 @@ public class chooseSprint {
         goBackhbBtn.getChildren().add(goBackBtn);
         grid.add(goBackhbBtn, 2, 6);
         
+        
+        
         try{
             Statement st=conn.createStatement();
             //sql to get user id from the user info table but only get the once that have confirmed to a project
@@ -101,8 +106,16 @@ public class chooseSprint {
             //an arraylist to store all projectid's that this user is involved in  
             while(rs.next())
             {
+                sumOfSprintPoints = sumOfSprintPoints + rs.getInt("Sprint_Point");
+                sumOfSprintHours = sumOfSprintHours + rs.getInt("Sprint_Duration");
                 observableList.add(rs.getString("Sprint_Name"));
-                observableListSprintID.add(rs.getInt("Sprint_ID"));
+                observableListAllSprintID.add(rs.getInt("Sprint_ID"));
+                
+                if(rs.getString("Sprint_Status").equals("Complete")){
+                    obListCompletedSprintID.add(rs.getInt("Sprint_ID"));
+                    obListCompletedSprintPoints.add(rs.getInt("Sprint_Point"));
+                    obListCompletedSprintHours.add(rs.getInt("Sprint_Duration"));
+                }
                 
             }
             rs.close(); 
@@ -122,7 +135,7 @@ public class chooseSprint {
             public void handle(ActionEvent e) {
                 try{
                     String burnDownChartTitle = observableList.get(listView.getSelectionModel().getSelectedIndex());
-                    int selectedSprintID = observableListSprintID.get(listView.getSelectionModel().getSelectedIndex());
+                    int selectedSprintID = observableListAllSprintID.get(listView.getSelectionModel().getSelectedIndex());
                     int sumOfStoryPoints = 0;
                     int sumOfStoryHours = 0;
                     
@@ -162,7 +175,7 @@ public class chooseSprint {
                         
                     }
                     
-                    LineChart<Number, Number> createGraph = startBurnDown.createGraph(burnDownChartTitle, sumOfStoryPoints, sumOfStoryHours, obListStoryID, obListStoryPoint, obListStoryHour, obListTaskTimeLeft, totalNumOfTasks);
+                    LineChart<Number, Number> createGraph = startBurnDown.createSprintBurnDown(burnDownChartTitle, sumOfStoryPoints, sumOfStoryHours, obListStoryID, obListStoryPoint, obListStoryHour, obListTaskTimeLeft, totalNumOfTasks);
                     final Stage myDialog = new Stage();
                     myDialog.initModality(Modality.WINDOW_MODAL);
                     
@@ -192,6 +205,38 @@ public class chooseSprint {
                         .message("Sorry there was a Server Error, Please restart program or contact Admin")
                         .showError();
                 } 
+            }
+        });
+        
+        prjBurnDownBtn.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent e) {
+                //int sumOfSprintPoints = sumOfSprintPoints;
+                LineChart<Number, Number> createGraphs = startBurnDown.createPrjBurnDown(sumOfSprintPoints, sumOfSprintHours, obListCompletedSprintID, obListCompletedSprintPoints,  obListCompletedSprintHours);
+                
+                        
+                final Stage myDialog = new Stage();
+                myDialog.initModality(Modality.WINDOW_MODAL);
+
+                Button backBtn = new Button("Go Back");
+                backBtn.setOnAction(new EventHandler<ActionEvent>(){
+
+                @Override
+                public void handle(ActionEvent arg0) {
+                    myDialog.close();
+                }
+
+                });
+
+                Scene myDialogScene = new Scene(VBoxBuilder.create()
+                 .children(createGraphs, backBtn)
+                 .alignment(Pos.CENTER)
+                 .padding(new Insets(10))
+                 .build());
+
+                myDialog.setScene(myDialogScene);
+                myDialog.show();
             }
         });
          
